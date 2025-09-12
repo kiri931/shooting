@@ -1,0 +1,75 @@
+/* ページ全体の基本設定 */
+body {
+  font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  background-color: #fdfdfd;
+  color: #333;
+}
+
+/* ヘッダー */
+header {
+  background-color: #2c3e50;
+  padding: 1rem;
+  text-align: center;
+}
+
+header h1 {
+  color: white;
+  margin: 0;
+}
+
+/* メインコンテンツ */
+main {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem 2rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* 見出し */
+h2 {
+  color: #2c3e50;
+  border-left: 6px solid #3498db;
+  padding-left: 0.5rem;
+  margin-top: 2rem;
+}
+
+h3 {
+  color: #34495e;
+  margin-top: 1.2rem;
+}
+
+/* 段落 */
+p {
+  margin: 0.5rem 0 1rem;
+}
+
+/* リスト */
+ul {
+  padding-left: 1.2rem;
+  margin: 0.5rem 0 1rem;
+}
+
+li {
+  margin: 0.3rem 0;
+}
+
+/* コードブロック */
+pre {
+  background: #f4f6f8;
+  border-left: 4px solid #3498db;
+  padding: 0.8rem;
+  overflow-x: auto;
+  border-radius: 6px;
+  margin: 1rem 0;
+}
+
+code {
+  font-family: "Consolas", "Courier New", monospace;
+  color: #e74c3c;
+  font-size: 0.95em;
+}
