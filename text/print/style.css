@@ -1,0 +1,82 @@
+/* style.css */
+
+/* 全体のフォントと余白 */
+body {
+  font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  margin: 40px;
+  line-height: 1.6;
+  color: #222;
+  background: #fff;
+}
+
+/* 大見出し */
+h1 {
+  text-align: center;
+  font-size: 1.8em;
+  margin-bottom: 1em;
+  border-bottom: 2px solid #444;
+  padding-bottom: 0.3em;
+}
+
+/* コード部分を枠付きで見やすく */
+pre, code {
+  font-family: "Consolas", "Courier New", monospace;
+  background: #f8f8f8;
+  border: 1px solid #ddd;
+  padding: 0.5em 1em;
+  border-radius: 4px;
+  display: block;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* 問題番号付きリストを見やすく */
+ol {
+  margin-top: 1em;
+  padding-left: 1.2em;
+}
+ol li {
+  margin: 0.8em 0;
+}
+
+/* 穴埋め部分 */
+.fill-blank {
+  display: inline-block;
+  min-width: 10em;
+  border-bottom: 1px solid #555;
+  margin: 0 0.2em;
+}
+
+/* 用語まとめ（details） */
+details {
+  margin-top: 2em;
+  border: 1px solid #ccc;
+  padding: 0.8em 1em;
+  border-radius: 4px;
+  background: #fafafa;
+}
+details summary {
+  font-weight: bold;
+  cursor: pointer;
+}
+details ul {
+  margin: 0.5em 0 0 1.2em;
+}
+
+/* コード表示用の共通クラス */
+.code-sample {
+  font-family: "Consolas", "Courier New", monospace;
+  background: #ffffff;   /* 背景は白に近いグレーで見やすく */
+  color: #000000;        /* 落ち着いた赤系でコードっぽい色 */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 0.2em 0.4em;
+}
+
+/* pre の大きなコードブロックに適用 */
+pre code.code-sample {
+  display: block;
+  padding: em;
+  overflow-x: auto;      /* 横スクロール対応 */
+  line-height: 1.4;
+}
