@@ -1,82 +1,227 @@
-/* style.css */
+/* =========================================================
+   カラーテーマ（CSS変数）
+   - 既定: プレビュー/印刷向けの白黒
+   - body.mode-edit で VSCode風（ダーク）に切替
+   ========================================================= */
+:root {
+  --bg: #fff;
+  --fg: #222;
+  --border: #ccc;
+  --code-bg: #f8f8f8;
+  --code-fg: #000;
+  --panel-bg: #fafafa;
+  --btn-bg: #f4f4f4;
+  --btn-fg: #000;
+  --btn-hover: #e0e0e0;
+}
 
-/* 全体のフォントと余白 */
+/* VSCode風（編集モード） */
+body.mode-edit {
+  --bg: #1e1e1e;
+  --fg: #d4d4d4;
+  --border: #3c3c3c;
+  --code-bg: #252526;
+  --code-fg: #eaeaea;
+  --panel-bg: #2b2b2b;
+  --btn-bg: #2d2d30;
+  --btn-fg: #eaeaea;
+  --btn-hover: #3a3a3d;
+}
+
+/* =========================================================
+   ベース
+   ========================================================= */
 body {
   font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
   margin: 40px;
   line-height: 1.6;
-  color: #222;
-  background: #fff;
+  color: var(--fg);
+  background: var(--bg);
 }
 
-/* 大見出し */
 h1 {
   text-align: center;
   font-size: 1.8em;
   margin-bottom: 1em;
-  border-bottom: 2px solid #444;
+  border-bottom: 2px solid var(--border);
   padding-bottom: 0.3em;
 }
 
-/* コード部分を枠付きで見やすく */
-pre, code {
-  font-family: "Consolas", "Courier New", monospace;
-  background: #f8f8f8;
-  border: 1px solid #ddd;
-  padding: 0.5em 1em;
-  border-radius: 4px;
-  display: block;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
-/* 問題番号付きリストを見やすく */
+/* リスト */
 ol {
   margin-top: 1em;
   padding-left: 1.2em;
 }
+
 ol li {
   margin: 0.8em 0;
 }
 
-/* 穴埋め部分 */
-.fill-blank {
-  display: inline-block;
-  min-width: 10em;
-  border-bottom: 1px solid #555;
-  margin: 0 0.2em;
+/* =========================================================
+   コード表示
+   - インライン: span.code-sample … 文中で改行しない
+   - ブロック:   pre > code.code-sample … 大きな枠
+   - pre は共通の見た目
+   ========================================================= */
+code {
+  font-family: "Consolas", "Courier New", monospace;
 }
 
-/* 用語まとめ（details） */
+/* インラインコード（文章の途中） */
+span.code-sample {
+  background: var(--code-bg);
+  color: var(--code-fg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.1em 0.3em;
+  display: inline;
+  white-space: nowrap;
+  /* 折り返さず1つの塊として表示 */
+}
+
+/* コードブロック */
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.5em 1em;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* 大きなコードブロック（強調） */
+pre code.code-sample {
+  display: block;
+  padding: 1em;
+  background: var(--code-bg);
+  color: var(--code-fg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow-x: auto;
+  /* 長い行は横スクロール */
+  line-height: 1.4;
+}
+
+/* =========================================================
+   穴埋め（答えトグル）
+   ========================================================= */
+.fill-blank {
+  display: inline-block;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+  color: transparent;
+  /* 答えは非表示 */
+  padding: 0 0.3em;
+  box-sizing: content-box;
+}
+
+.fill-blank.show {
+  color: var(--fg);
+  /* 答えを表示 */
+}
+
+
+/* =========================================================
+   用語まとめ（details）
+   ========================================================= */
 details {
   margin-top: 2em;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border);
   padding: 0.8em 1em;
   border-radius: 4px;
-  background: #fafafa;
+  background: var(--panel-bg);
 }
+
 details summary {
   font-weight: bold;
   cursor: pointer;
 }
+
 details ul {
   margin: 0.5em 0 0 1.2em;
 }
 
-/* コード表示用の共通クラス */
-.code-sample {
-  font-family: "Consolas", "Courier New", monospace;
-  background: #ffffff;   /* 背景は白に近いグレーで見やすく */
-  color: #000000;        /* 落ち着いた赤系でコードっぽい色 */
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 0.2em 0.4em;
+/* =========================================================
+   ヘッダー（固定ツールバー）
+   ========================================================= */
+header.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 0.6em 0;
+  margin-bottom: 1em;
 }
 
-/* pre の大きなコードブロックに適用 */
-pre code.code-sample {
-  display: block;
-  padding: em;
-  overflow-x: auto;      /* 横スクロール対応 */
-  line-height: 1.4;
+header .toolbar {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+header h1 {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  font-size: 1.2em;
+  text-align: center;
+}
+
+/* =========================================================
+   ボタン（答え表示 / プレビュー切替）
+   ========================================================= */
+#show-answers,
+#toggle-preview {
+  display: inline-block;
+  margin: 1em 0.5em 2em 0;
+  padding: 0.4em 1.2em;
+  font-size: 1em;
+  font-family: inherit;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  cursor: pointer;
+}
+
+#show-answers:hover,
+#toggle-preview:hover {
+  background: var(--btn-hover);
+}
+
+/* =========================================================
+   印刷
+   - ヘッダーとボタンを非表示
+   - 強制白背景・黒文字
+   ========================================================= */
+@media print {
+  .page-break {
+    break-before: page;
+  }
+
+  header.site-header {
+    display: none !important;
+  }
+
+  body {
+    color: #000 !important;
+    background: #fff !important;
+    font-size: 14pt;
+    line-height: 1.8;
+  }
+
+  #show-answers,
+  #toggle-preview {
+    display: none !important;
+  }
+}
+
+/* code-sample と fill-blank が隣接しても自然に表示されるように */
+.code-sample+.fill-blank,
+.fill-blank+.code-sample {
+  margin-left: 0.2em;
+  /* ちょっと隙間をあける */
 }

@@ -1,14 +1,26 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <title>情報プログレス 動作用Javascript</title>
   <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <main>
-    <h1>情報プログレス 動作用Javascript</h1>
 
+</head>
+
+<body>
+  <!-- 常に操作できるヘッダー（ボタンはここに） -->
+  <header class="site-header">
+    <div class="toolbar">
+      <button id="toggle-preview">プレビュー表示</button>
+      <button id="show-answers">答えを表示</button>
+    </div>
+
+  </header>
+
+  <main>
+    <h1>情プロ シューティングゲーム用Javascript No.2</h1>
+    <!-- コード全文（変更なし） -->
     <pre><code class="code-sample">
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -77,52 +89,172 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 gameLoop();
-
     </code></pre>
 
+    <!-- 基礎の穴埋め（既存） -->
     <ol>
       <li>
-        <span class="code-sample">&lt;!DOCTYPE html&gt;</span> は、このファイルが <span class="fill-blank"></span> であることを示す宣言です。
+        <span class="code-sample">const canvas = document.getElementById("gameCanvas");</span> は、HTMLの
+        <span class="fill-blank" data-answer="canvas"></span> 要素（id属性が
+        <span class="fill-blank" data-answer="gameCanvas"></span>）を取得しています。
       </li>
+
       <li>
-        <span class="code-sample">&lt;html lang="ja"&gt;</span> は、この文書が<span class="fill-blank"></span> 語で書かれていることを示します。
+        <span class="code-sample">const ctx = canvas.getContext("2d");</span> は、
+        <span class="fill-blank" data-answer="2D"></span> 描画用のコンテキスト（筆）を取り出し、変数
+        <span class="fill-blank" data-answer="ctx"></span> に入れています。
       </li>
+
       <li>
-        <span class="code-sample">&lt;head&gt;</span> タグの中には、ページの見た目には直接表示されない <span class="fill-blank"></span> 情報が書かれます。
+        <span class="code-sample">const player = { ... };</span> は、位置や大きさ・色などの情報をひとまとめにした
+        <span class="fill-blank" data-answer="オブジェクト"></span> を作っています。ここでプレイヤーの色は
+        <span class="fill-blank" data-answer="yellow"></span> です。
       </li>
+
       <li>
-        <span class="code-sample">&lt;meta charset="UTF-8"&gt;</span> は、文字コードを <span class="fill-blank"></span> に指定することで、日本語が文字化けしないようにします。
+        <span class="code-sample">const bullets = [];</span> は弾を入れていく
+        <span class="fill-blank" data-answer="配列"></span> を用意しています。
+        <span class="code-sample">bullets.push({...})</span> で新しい弾を
+        <span class="fill-blank" data-answer="追加"></span> します。
       </li>
+
       <li>
-        <span class="code-sample">&lt;title&gt;シューティングゲーム&lt;/title&gt;</span> は、ブラウザの <span class="fill-blank"></span> に表示されるタイトルを設定します。
+        <span class="code-sample">const BULLET_SPEED = -5;</span> の
+        <span class="fill-blank" data-answer="BULLET_SPEED"></span> は定数です。負の値なので、弾は
+        <span class="fill-blank" data-answer="上"></span> 方向に進みます。
       </li>
+
       <li>
-        <span class="code-sample">&lt;link rel="stylesheet" href="style.css"&gt;</span> は、外部の <span class="fill-blank"></span> ファイルを読み込み、デザインを適用します。
+        <span class="code-sample">tryShoot()</span> は弾を作る
+        <span class="fill-blank" data-answer="関数"></span> です。発射位置はプレイヤーの
+        <span class="fill-blank" data-answer="座標"></span> と同じです。
       </li>
+
       <li>
-        <span class="code-sample">&lt;body&gt;</span> タグには、実際に画面に表示される <span class="fill-blank"></span> が書かれます。
+        <span class="code-sample">window.addEventListener("keydown", (e) =&gt; {...})</span> はキーボードを受け取る
+        <span class="fill-blank" data-answer="イベントリスナー"></span> です。左矢印のときは
+        <span class="fill-blank" data-answer="左"></span> に、右矢印のときは
+        <span class="fill-blank" data-answer="右"></span> に動きます。
       </li>
+
       <li>
-        <span class="code-sample">&lt;canvas id="gameCanvas" width="480" height="640"&gt;&lt;/canvas&gt;</span> は、ゲーム画面を描くための <span class="fill-blank"></span> 領域を作ります。ここでは幅が <span class="fill-blank"></span> ピクセル、高さが <span class="fill-blank"></span> ピクセルに設定されています。
+        左右移動では、<span class="code-sample">player.x &gt; 10</span> や
+        <span class="code-sample">player.x &lt; canvas.width - player.width - 10</span> の判定で
+        <span class="fill-blank" data-answer="画面端"></span> からはみ出さないようにしています。
       </li>
+
       <li>
-        <span class="code-sample">&lt;script src="main.js"&gt;&lt;/script&gt;</span> は、外部の <span class="fill-blank"></span> ファイルを読み込み、ゲームの動きをプログラムします。
+        <span class="code-sample">e.code === "Space"</span> のとき
+        <span class="code-sample">tryShoot()</span> を呼び出して弾を発射します。ここで使われているキー判定のプロパティ名は
+        <span class="fill-blank" data-answer="code"></span> です。
+      </li>
+
+      <li>
+        <span class="code-sample">update()</span> はゲームの状態を更新します。弾の
+        <span class="fill-blank" data-answer="y"></span> 座標に速度
+        <span class="fill-blank" data-answer="vy"></span> を足して進め、画面の外（
+        <span class="fill-blank" data-answer="0"></span> より上）に出た弾は
+        <span class="fill-blank" data-answer="配列"></span> から削除します。
+      </li>
+
+      <li>
+        <span class="code-sample">draw()</span> は描画します。まず背景を
+        <span class="fill-blank" data-answer="黒"></span> で塗りつぶし、次にプレイヤーを
+        <span class="fill-blank" data-answer="黄色"></span> 色で四角形として描き、最後に弾を
+        <span class="fill-blank" data-answer="白"></span> 色で描いています。
+      </li>
+
+      <li>
+        <span class="code-sample">requestAnimationFrame(gameLoop)</span> は、
+        <span class="fill-blank" data-answer="ブラウザの描画"></span> のタイミングで次の描画をお願いする関数です。これにより
+        <span class="fill-blank" data-answer="gameLoop"></span> が繰り返し実行されます。
       </li>
     </ol>
 
-    <details><summary>用語解説</summary>
-      ここで出てきた用語の説明です。
+    <!-- ===== 応用・思考力問題（新規追加） ===== -->
+    <section>
+      <h2>応用・思考力問題</h2>
+      <ol>
+
+        <li>
+          プレイヤーの中央から弾を発射したい。式の空欄を埋めよ：<br>
+          <span class="code-sample">player.x + </span><span class="fill-blank"
+            data-answer="player.width / 2"></span><span class="code-sample"> - </span><span class="fill-blank"
+            data-answer="bullet.width / 2"></span>
+        </li>
+
+        <li>
+          次の境界チェックは「画面外に出ない」ためのもの。左端／右端の「<span class="code-sample">10</span>」は何を意味するか。<br>
+          <span class="code-sample">if (player.x &gt; 10) … / if (player.x &lt; canvas.width - player.width - 10)
+            …</span><br>
+          <span class="fill-blank" data-answer="左右の安全マージン（余白）"></span>
+          を一言で答えよ。<br>さらに、マジックナンバーを避けるため定数名を2つ提案せよ：
+          <span class="fill-blank" data-answer="MARGIN_LEFT"></span> /
+          <span class="fill-blank" data-answer="MARGIN_RIGHT"></span>
+        </li>
+
+        <li>
+          <span class="code-sample">bullets.splice(i, 1)</span> を「前から i++ でループ」中に実行すると、何が起きてバグにつながりやすいか。<br>
+          <span class="fill-blank" data-answer="要素が詰まり次の要素を飛ばす（インデックスずれ）"></span><br>
+          これを避ける安全な走査方法を1つ書け：
+          <span class="fill-blank" data-answer="後ろから（i--）でループ"></span>
+        </li>
+
+        <li>
+          <span class="code-sample">window.addEventListener("keydown", ...)</span> の判定で
+          <span class="code-sample">e.key</span> と <span class="code-sample">e.code</span> の違いを一言で：
+          <span class="fill-blank" data-answer="keyは入力文字／codeは物理キー"></span>。<br>
+          スペースキー検出に適しているのはどちらか：
+          <span class="fill-blank" data-answer="e.code"></span>
+        </li>
+
+        <li>
+          もしキャンバスの高さを <span class="code-sample">800</span> に変えたら、弾の消去条件 <span class="code-sample">bullet.y &lt; 0</span>
+          はそのままで良いか？理由とともに答えよ：<br>
+          <span class="fill-blank" data-answer="良い。上端は常に0で変わらないから"></span>
+        </li>
+        <div class="page-break"></div>
+
+
+        <li>
+          次のキー入力を順に1回ずつ処理したとき、最終的な <span class="code-sample">player.x</span> は？<br>
+          初期値は <span class="code-sample">canvas.width/2 - 15 (=225)</span>、幅は <span
+            class="code-sample">480</span>。入力：左矢印 → 右矢印 → 右矢印 → 右矢印。移動量は各10。<br>
+          <span class="fill-blank" data-answer="245"></span>
+        </li>
+
+        <li>
+          60fps環境で <span class="code-sample">vy = -5</span> の弾は、1秒で何ピクセル進むか（上方向）：<br>
+          <span class="fill-blank" data-answer="-300（ピクセル）"></span>
+        </li>
+        
+
+        <li>
+          update と draw の順序を逆にすると何が問題か、一言で：
+          <span class="fill-blank" data-answer="前フレームの状態を描くことになり見た目が遅れる"></span>
+        </li>
+      </ol>
+    </section>
+
+    <!-- 用語解説（穴埋め化） -->
+    <details open>
+      <summary>用語解説</summary>
       <ul>
-        <li>HTML … ウェブページを作るための言語</li>
-        <li>head … ページの設定を書く部分</li>
-        <li>body … 実際に表示される部分</li>
-        <li>canvas … 描画（グラフィック）用の領域</li>
-        <li>CSS … デザインを指定するための言語</li>
-        <li>JavaScript … ページに動きを付けるための言語</li>
+        <li>canvas … <span class="fill-blank" data-answer="図形を描くための要素（HTML側）"></span></li>
+        <li>2Dコンテキスト（ctx）… <span class="fill-blank" data-answer="2D描画用のAPI（線や四角を描く）"></span></li>
+        <li>オブジェクト … <span class="fill-blank" data-answer="複数の情報をまとめた入れ物"></span>（<span class="code-sample">{ x:0, y:0,
+            ... }</span>）</li>
+        <li>配列 … <span class="fill-blank" data-answer="複数のデータを順番に並べる入れ物"></span>（<span class="code-sample">[]</span>）
+        </li>
+        <li>定数（const）… <span class="fill-blank" data-answer="値をあとで変えない変数"></span></li>
+        <li>イベントリスナー … <span class="fill-blank" data-answer="入力や出来事に反応する仕組み"></span></li>
+        <li>ゲームループ … <span class="fill-blank" data-answer="update()→draw()を繰り返す処理"></span></li>
+        <li>requestAnimationFrame … <span class="fill-blank" data-answer="ブラウザの描画タイミングで関数を呼ぶAPI"></span></li>
       </ul>
     </details>
   </main>
-  <script src="inject.js"></script>
+
+  <script src="ui.js"></script>
 </body>
 
 </html>
