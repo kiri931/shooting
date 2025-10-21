@@ -19,6 +19,6 @@ export function setupInput(target = window) {
 }
 
 // 押下状態ヘルパ
-export function isLeftPressed()  { return keys.has("arrowleft") || keys.has("a"); }
+export function isLeftPressed() { return keys.has("arrowleft") || keys.has("a"); }
 export function isRightPressed() { return keys.has("arrowright") || keys.has("d"); }
 export function isShootPressed() { return keys.has(" "); } // Space

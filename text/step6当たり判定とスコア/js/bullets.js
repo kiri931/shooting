@@ -5,7 +5,7 @@ import { player } from "./player.js";
 export const bullets = []; // { x, y, width, height, vy }
 
 const BULLET_SPEED = -10;
-const BULLET_SIZE  = { w: 4, h: 10 };
+const BULLET_SIZE = { w: 4, h: 10 };
 const BULLET_COOLDOWN_MS = 120;
 
 let lastShotAt = 0;

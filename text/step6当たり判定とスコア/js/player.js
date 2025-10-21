@@ -17,7 +17,7 @@ export function initPlayer(canvas) {
 
 export function updatePlayer(canvas) {
   let vx = 0;
-  if (isLeftPressed())  vx -= player.speed;
+  if (isLeftPressed()) vx -= player.speed;
   if (isRightPressed()) vx += player.speed;
   player.x += vx;
 
