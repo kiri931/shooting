@@ -6,6 +6,9 @@ import { handleCollisions } from "./collision.js";
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+const mapImage = new Image();
+mapImage.src = "map.png";
+
 initPlayer(canvas);
 
 export const bullets = [];
@@ -58,7 +61,7 @@ function update() {
 
 function draw() {
     ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(mapImage, 0, 0, canvas.width, canvas.height);
 
     drawPlayer(ctx);
 
