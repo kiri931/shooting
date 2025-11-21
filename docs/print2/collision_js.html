@@ -89,7 +89,7 @@ function rectsIntersect(a, b) {
       <li>
         <span class="code-sample">{ player } や { enemies }</span> の
         <span class="fill-blank" data-answer="波かっこ（ブレース）"></span> は、モジュールの中から
-        <span class="fill-blank" data-answer="名前のついたものだけ取り出す"></span> 書き方です。
+        <span class="fill-blank" data-answer="名前のついた関数・オブジェクトだけ取り出す"></span> 書き方です。
       </li>
 
       <li>
@@ -108,14 +108,18 @@ function rectsIntersect(a, b) {
         <span class="fill-blank" data-answer="敵配列"></span> を
         <span class="fill-blank" data-answer="後ろから前へ"></span> たどっています。
         これは途中で <span class="code-sample">splice</span> しても
-        <span class="fill-blank" data-answer="インデックスがずれにくい"></span> ためです。
+        <span class="fill-blank" data-answer="インデックスがずれない"></span> ためです。
       </li>
 
       <li>
         内側のループ <span class="code-sample">for (let bi = bullets.length - 1; bi &gt;= 0; bi--)</span> も同様に
         <span class="fill-blank" data-answer="弾の配列"></span> を
-        <span class="fill-blank" data-answer="後ろから前へ走査して削除に強い"></span> ようにしています。
+        <span class="fill-blank" data-answer="後ろから前へ順番に確認して、削除してもインデックスがずれない"></span> ようにしています。
       </li>
+      <details>
+        <summary>削除の様子の表示(5,6の意味が分からない人向けアニメーション)</summary>
+        <a href="https://codepen.io/tomohiro-adachi/pen/yyOzMvQ">こちらをクリックしてください。</a>
+      </details>
 
       <li>
         <span class="code-sample">let hit = false;</span> は、その敵に
@@ -160,9 +164,13 @@ function rectsIntersect(a, b) {
       <li>
         <span class="code-sample">a.x &lt; b.x + b.width &amp;&amp; ...</span> という条件は、
         専門用語で <span class="fill-blank" data-answer="AABB（軸平行境界ボックス）"></span> と呼ばれる
-        <span class="fill-blank" data-answer="矩形同士の当たり判定アルゴリズム"></span> の一種です。
+        <span class="fill-blank" data-answer="長方形同士の当たり判定アルゴリズム"></span> の一種です。
       </li>
     </ol>
+    <details>
+      <summary>軸平行境界ボックス</summary>
+      <a href="https://codepen.io/tomohiro-adachi/pen/xbVXqBw">こちらをクリックしてください。</a>
+    </details>
 
     <!-- 応用・思考力問題 -->
     <section>
@@ -174,6 +182,11 @@ function rectsIntersect(a, b) {
           <span class="code-sample">--</span> しているか、理由を一言で：<br>
           <span class="fill-blank" data-answer="削除で要素が詰まっても、まだ見ていない要素を飛ばさないため"></span>
         </li>
+        <details>
+          <summary>削除の様子の表示(要素が詰まるの意味が分からない人向けアニメーション)</summary>
+          <a href="https://codepen.io/tomohiro-adachi/pen/yyOzMvQ">こちらをクリックしてください。</a>
+        </details>
+
 
         <li>
           <span class="code-sample">hit</span> フラグが true になった後、
@@ -188,21 +201,14 @@ function rectsIntersect(a, b) {
         </li>
 
         <li>
-          今は「自機に敵が1回当たるたびにライフを1減らす」仕様である。
-          「少しの間だけ無敵時間をつけたい」場合に、どのようなフラグや変数を追加すればよいか。<br>
-          例：<span class="fill-blank" data-answer="isInvincible や invincibleTimer のような変数"></span>
-        </li>
-
-        <li>
           <span class="code-sample">rectsIntersect</span> 関数で 4 つの条件のうち 1 つでも成り立たないとき、
           四角形はどういう関係になっているか。<br>
           <span class="fill-blank" data-answer="左右または上下のどこかで完全に離れている"></span>
         </li>
 
         <li>
-          「自機と敵が当たったら即ゲームオーバー」にしたい場合、
-          （ライフ制ではなく）コードのどの部分を消すか・変更するかを日本語で説明せよ。<br>
-          <span class="fill-blank" data-answer="player.life を使う部分を消し、当たったらすぐ reload するだけにする"></span>
+          「自機と敵が当たったら即ゲームオーバー」にしたい場合、どこを変更することが簡単か日本語で説明せよ。<br>
+          <span class="fill-blank" data-answer="当たったらすぐ reload するだけにする"></span>
         </li>
 
         <li>
