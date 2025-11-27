@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>情報プログレス2学期総括テスト</title>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="toolbar">
+            <button id="toggle-preview">プレビュー表示</button>
+            <button id="show-answers">答えを表示</button>
+        </div>
+    </header>
+
+
+    <main>
+        <h1>情報プログレス2学期総括テスト</h1>
+        <h2>次の質問に答えなさい。</h2>
+
+        <ol>
+            <li>JavaScript のプログラムを、複数のファイルに正式な仕組みとして分割して扱うときに用いられる名称は何か。<!-- モジュール --></li>
+            <li>別ファイルのモジュールから関数や変数などの機能を自分のファイルへ読み込むときに使う JavaScript の文は何か。<!-- import文 --></li>
+            <li>自分のファイル（モジュール）内の関数や変数を他のモジュールから利用できるように公開するときに使うJavaScript の文は何か。<!-- export文 --></li>
+            <li>JavaScript で「コンソールに値を出力するための標準的な命令」は何か。<!-- console.log() --></li>
+            <li>JavaScript で関数を定義するときに必ず書くキーワードは何か。<!-- function --></li>
+            <li>JavaScript の配列から「指定した位置の要素を削除したり、置き換えたりする標準メソッド」は何か。<!-- splice --></li>
+            <li>関数の内部から「値を呼び出し元へ返す」ために使うキーワードは何か。<!-- return --></li>
+            <li>JavaScript で「再代入不可の変数」を宣言するときに使うキーワードは何か。<!-- const --></li>
+            <li>JavaScript で「再代入可能な変数」を宣言するときに使うキーワードは何か。<!-- let --></li>
+            <li>HTML5 Canvas で、<strong>画像</strong>をキャンバスに描画するときに用いる2D コンテキストのメソッドは何か。<!-- drawImage --></li>
+        </ol>
+
+        <h2>以下のプログラムについて、内容を確認して、問いに答えなさい。</h2>
+        <pre><code class="code-sample">
+import { player } from "./player.js";
+import { enemies } from "./enemies.js";
+import { bullets } from "./main.js";
+
+
+
+function rectsIntersect(a, b) {
+  return (
+    a.x &lt; b.x + b.width &amp;&amp;
+    a.x + a.width &gt; b.x &amp;&amp;
+    a.y &lt; b.y + b.height &amp;&amp;
+    a.y + a.height &gt; b.y
+  );
+}
+    </code></pre>
+        <ol>
+            <li><span class="code-sample">handleCollisions()</span> 関数の役割は、弾と敵、自機と敵の<span class="fill-blank"
+                    data-answer="当たり判定"></span>を行うことです。</li>
+            <li>ここで使用されているループは、敵配列を後ろから前へたどっています。これは途中で<span class="code-sample">splice</span>しても<span
+                    class="fill-blank" data-answer="インデックスがずれない"></span> ためです。</li>
+            <li><span class="code-sample">let hit = false;</span> は、その敵にすでに弾が当たったかどうかを記録するための<span class="fill-blank"
+                    data-answer="フラグ（旗）"></span> です。</li>
+            <li>
+                命中時に <span class="code-sample">player.score += 1;</span> としているのは、
+                <span class="fill-blank" data-answer="スコア"></span> を
+                <span class="fill-blank" data-answer="1点増やす"></span> ためです。
+            </li>
+
+            <li>自機と敵の衝突判定では、当たったときに<span class="code-sample">player.life -= 1;</span> で<span class="fill-blank"
+                    data-answer="ライフ"></span> を<span class="fill-blank" data-answer="1減らす"></span> ようにしています。</li>
+            <li><span class="code-sample">if (player.life &lt;= 0) { document.location.reload(); }</span> は、ライフが 0
+                以下になったときにページを再読み込みしてゲームを最初からにする処理です。</li>
+
+            <li>
+                <span class="code-sample">rectsIntersect(a, b)</span> 関数は、
+                <span class="fill-blank" data-answer="2つの四角形が重なっているかどうか"></span> を調べ、
+                当たっていれば <span class="fill-blank" data-answer="true"></span>、
+                当たっていなければ <span class="fill-blank" data-answer="false"></span> を返します。
+            </li>
+
+            <li>
+                <span class="code-sample">a.x &lt; b.x + b.width &amp;&amp; ...</span> という条件は、
+                専門用語で <span class="fill-blank" data-answer="AABB（軸平行境界ボックス）"></span> と呼ばれる
+                <span class="fill-blank" data-answer="長方形同士の当たり判定アルゴリズム"></span> の一種です。
+            </li>
+            <li>
+                <span class="code-sample">hit</span> フラグが true になった後、<span class="code-sample">if (hit) continue;</span>
+                としているのはなぜか。<br>
+                <span class="fill-blank" data-answer="すでに消えた敵について、さらに弾との判定を行わないようにするため"></span>
+            </li>
+
+            <li>コアを 1 点ではなく、敵によって 10 点や 100 点など変えたい場合、コードのどの部分をどのように変えればよいか。</li>
+            <li>上記の問題において、今後のことも考えるとより良い方法がある。どのような手法が考えられるか。オブジェクトという言葉を使って示しなさい。</li>
+
+            <li>
+                <span class="code-sample">rectsIntersect</span> 関数で 4 つの条件のうち 1 つでも成り立たないとき、
+                四角形はどういう関係になっているか。<br>
+                <span class="fill-blank" data-answer="左右または上下のどこかで完全に離れている"></span>
+            </li>
+
+            <li>
+                「自機と敵が当たったら即ゲームオーバー」にしたい場合、どこを変更することが簡単か日本語で説明せよ。<br>
+                <span class="fill-blank" data-answer="当たったらすぐ reload するだけにする"></span>
+            </li>
+
+            <li>
+                最後の <span class="code-sample">break;</span> がなかった場合、どのような不具合が起こり得るか。<br>
+                <span class="fill-blank" data-answer="1回当たった後も不要な判定や処理が続き、想定外に敵やライフが減る可能性がある"></span>
+            </li>
+        </ol>
+    </main>
+    <script src="ui.js"></script>
+</body>
+
+</html>
