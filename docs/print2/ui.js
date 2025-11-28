@@ -8,12 +8,17 @@
   const toggleBtn = document.getElementById('toggle-preview');
   let previewing = false;
 
-  function setPreviewMode(on) {
-    previewing = on;
-    body.classList.toggle('mode-edit', !on);
-    body.classList.toggle('mode-preview', on); // mode-preview は :root 既定（白黒）をそのまま使う
-    toggleBtn.textContent = on ? '編集表示に戻す' : 'プレビュー表示';
+function setPreviewMode(on) {
+  previewing = on;
+  body.classList.toggle('mode-edit', !on);
+  body.classList.toggle('mode-preview', on);
+
+  // ★ ここを安全にする
+  if (toggleBtn) {
+      toggleBtn.textContent = on ? '編集表示に戻す' : 'プレビュー表示';
   }
+}
+
 
   if (toggleBtn) {
     toggleBtn.addEventListener('click', () => setPreviewMode(!previewing));
@@ -61,6 +66,12 @@
   } else if (mq.addListener) {
     mq.addListener(e => e.matches ? setPreviewMode(true) : setPreviewMode(wasPreviewing));
   }
+
+
+  // 関数を外に公開
+  window.updateAnswers = updateAnswers;
+  window.setPreviewMode = setPreviewMode;
+
 })();
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -71,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const length = answer.length;
 
     // 1文字につき2emの幅、最低でも4em確保
-    const width = Math.max(length , 4) + "em";
+    const width = Math.max(length, 4) + "em";
 
     blank.style.width = width;
   });
