@@ -77,8 +77,215 @@ function rectsIntersect(a, b) {
   );
 }
     </code></pre>
+    <details>
+      <summary>今回の内容をまとめたcodepen</summary>
+      <a href="https://codepen.io/tomohiro-adachi/pen/JoXvMGN">こちらをクリック</a>
+    </details>
 
-    <!-- 基礎の穴埋め問題 -->
+    <h2>1. 他ファイルからの読み込み</h2>
+
+    <pre><code>import { player } from "./player.js";
+import { enemies } from "./enemies.js";
+import { bullets } from "./main.js";</code></pre>
+
+    <ul>
+      <li><code>player.js</code> にある <code>player</code> オブジェクト（自機の位置・サイズ・スコア・ライフなど）を読み込む。</li>
+      <li><code>enemies.js</code> にある <code>enemies</code> 配列（画面上の敵キャラ一覧）を読み込む。</li>
+      <li><code>main.js</code> にある <code>bullets</code> 配列（画面上の弾の一覧）を読み込む。</li>
+    </ul>
+
+    <p>
+      ⇒ このファイルは、それぞれの現在の状態（自機・敵・弾）を使って、<strong>当たり判定だけを担当するモジュール</strong>になっています。
+    </p>
+
+    <h2>2. handleCollisions 関数の役割</h2>
+
+    <pre><code>export function handleCollisions() {
+  // 弾 × 敵
+  ...
+  // 自機 × 敵（ゲームオーバー）
+  ...
+}</code></pre>
+
+    <ul>
+      <li><code>handleCollisions()</code> は「このフレームでの当たり判定を全部やる」関数。</li>
+      <li>ゲームループ（<code>requestAnimationFrame</code> など）から毎フレーム呼び出されることを想定している。</li>
+      <li>中で、<strong>①弾と敵の衝突</strong> と <strong>②自機と敵の衝突</strong> をまとめて判定する。</li>
+    </ul>
+
+    <h2>3. 弾 × 敵 の当たり判定</h2>
+
+    <pre><code>// 弾 × 敵
+for (let ei = enemies.length - 1; ei &gt;= 0; ei--) {
+  const e = enemies[ei];
+  let hit = false;
+
+  for (let bi = bullets.length - 1; bi &gt;= 0; bi--) {
+    const b = bullets[bi];
+    if (rectsIntersect(
+      { x: b.x, y: b.y, width: b.width, height: b.height },
+      { x: e.x, y: e.y, width: e.width, height: e.height }
+    )) {
+      // 命中：弾と敵を削除、スコア加算
+      bullets.splice(bi, 1);
+      enemies.splice(ei, 1);
+      player.score += 1;
+      console.log("Score:", player.score);
+      hit = true;
+      break; // この敵は消えたので次の敵へ
+    }
+  }
+
+  if (hit) continue;
+}</code></pre>
+
+    <h3>3-1. 外側のループ（敵ごとにチェック）</h3>
+
+    <pre><code>for (let ei = enemies.length - 1; ei &gt;= 0; ei--) {
+  const e = enemies[ei];
+  let hit = false;</code></pre>
+
+    <ul>
+      <li><code>ei</code> は enemies 配列のインデックス（enemy index）。</li>
+      <li><code>enemies.length - 1</code> から 0
+        方向に向かってループしているのは、<strong>途中で配列から要素を削除しても、まだ見ていない要素の順番がズレにくいようにするため</strong>。</li>
+      <li><code>const e = enemies[ei];</code> で今チェック中の敵1体を <code>e</code> に取り出す。</li>
+      <li><code>hit</code> は「この敵がどれかの弾に当たったかどうか」を記録するフラグ。</li>
+    </ul>
+
+    <h3>3-2. 内側のループ（弾ごとにチェック）</h3>
+
+    <pre><code>for (let bi = bullets.length - 1; bi &gt;= 0; bi--) {
+  const b = bullets[bi];
+  if (rectsIntersect(
+    { x: b.x, y: b.y, width: b.width, height: b.height },
+    { x: e.x, y: e.y, width: e.width, height: e.height }
+  )) {
+    ...
+  }
+}</code></pre>
+
+    <ul>
+      <li><code>bi</code> は bullets 配列のインデックス（bullet index）。</li>
+      <li>こちらも後ろから前へ、同じ理由でループ。</li>
+      <li><code>rectsIntersect(...)</code> に「弾 b の四角」と「敵 e の四角」を渡し、重なっているか（当たっているか）を判定している。</li>
+    </ul>
+
+    <h3>3-3. 当たったときの処理</h3>
+
+    <pre><code>// 命中：弾と敵を削除、スコア加算
+bullets.splice(bi, 1);
+enemies.splice(ei, 1);
+player.score += 1;
+console.log("Score:", player.score);
+hit = true;
+break; // この敵は消えたので次の敵へ</code></pre>
+
+    <ul>
+      <li><code>bullets.splice(bi, 1);</code> … 当たった弾を bullets 配列から削除。</li>
+      <li><code>enemies.splice(ei, 1);</code> … 当たった敵を enemies 配列から削除（敵が倒れたイメージ）。</li>
+      <li><code>player.score += 1;</code> … スコアを1点加算。</li>
+      <li><code>console.log("Score:", player.score);</code> … デバッグ用にスコアをコンソールに表示。</li>
+      <li><code>hit = true;</code> … この敵はもう弾に当たった、という印。</li>
+      <li><code>break;</code> … 「この敵に対する弾チェック」はここで終了。敵を削除したので、これ以上同じ敵に他の弾が当たることはない。</li>
+    </ul>
+
+    <h3>3-4. 外側ループでの hit チェック</h3>
+
+    <pre><code>if (hit) continue;</code></pre>
+
+    <ul>
+      <li><code>hit</code> が <code>true</code> なら「この敵はもう消えた」ので、その敵に対する残りの処理（もし書いていれば）をスキップする。</li>
+      <li>ここでは後ろに特別な処理はないので、「倒された敵について余計な処理をしないためのお守り」のような書き方になっている。</li>
+    </ul>
+
+    <h2>4. 自機 × 敵 の当たり判定（ライフ減少・ゲームオーバー）</h2>
+
+    <pre><code>// 自機 × 敵（ゲームオーバー）
+for (let ei = enemies.length - 1; ei &gt;= 0; ei--) {
+  const e = enemies[ei];
+  if (rectsIntersect(
+    { x: player.x, y: player.y, width: player.width, height: player.height },
+    { x: e.x, y: e.y, width: e.width, height: e.height }
+  )) {
+    player.life -= 1;
+    if (player.life &lt;= 0) {
+      document.location.reload();
+    }
+    enemies.splice(ei, 1);
+    console.log("Player Life:", player.life);
+    // isGameOver = true;
+    break;
+  }
+}</code></pre>
+
+    <h3>4-1. 敵ごとに自機との衝突をチェック</h3>
+
+    <ul>
+      <li>こちらも <code>enemies</code> を後ろから前へループ。</li>
+      <li><code>rectsIntersect</code> に「自機 player の四角」と「敵 e の四角」を渡して、ぶつかっているかどうかを判定する。</li>
+    </ul>
+
+    <h3>4-2. 当たったときの処理</h3>
+
+    <pre><code>player.life -= 1;
+if (player.life &lt;= 0) {
+  document.location.reload();
+}
+enemies.splice(ei, 1);
+console.log("Player Life:", player.life);
+break;</code></pre>
+
+    <ul>
+      <li><code>player.life -= 1;</code> … プレイヤーのライフを1減らす。</li>
+      <li><code>if (player.life &lt;= 0) { document.location.reload(); }</code><br>
+        ライフが0以下になったら、<strong>ページをリロードしてゲームを最初からやり直し</strong>にする（簡易的なゲームオーバー処理）。
+      </li>
+      <li><code>enemies.splice(ei, 1);</code> … 自機にぶつかった敵を enemies 配列から削除。</li>
+      <li><code>console.log("Player Life:", player.life);</code> … 現在のライフをコンソールに表示（デバッグ用）。</li>
+      <li><code>break;</code> … 1フレーム内で自機が複数の敵と同時に当たってライフが一気に減らないよう、<strong>最初に当たった1体分だけ処理してループを抜ける</strong>。</li>
+    </ul>
+
+    <h2>5. rectsIntersect 関数（四角どうしの重なり判定）</h2>
+
+    <pre><code>function rectsIntersect(a, b) {
+  return (
+    a.x &lt; b.x + b.width &amp;&amp;
+    a.x + a.width &gt; b.x &amp;&amp;
+    a.y &lt; b.y + b.height &amp;&amp;
+    a.y + a.height &gt; b.y
+  );
+}</code></pre>
+
+    <p><code>a</code> と <code>b</code> は、それぞれ <code>{ x, y, width, height }</code>
+      を持つ「四角形」を表します。4つの条件をすべて満たすとき、二つの四角形が一部でも重なっていると判断します。</p>
+
+    <ul>
+      <li><code>a.x &lt; b.x + b.width</code> … Aの左端はBの右端より左側にある</li>
+      <li><code>a.x + a.width &gt; b.x</code> … Aの右端はBの左端より右側にある</li>
+      <li><code>a.y &lt; b.y + b.height</code> … Aの上端はBの下端より上側にある</li>
+      <li><code>a.y + a.height &gt; b.y</code> … Aの下端はBの上端より下側にある</li>
+    </ul>
+
+    <p>
+      ⇒ これらが全部 <code>true</code> のとき、「AとBの四角形が重なっている」として <code>true</code> を返します。<br>
+      一つでも <code>false</code> なら重なっていないので <code>false</code> になります。
+    </p>
+
+    <h2>6. 全体のまとめ</h2>
+
+    <ul>
+      <li><code>handleCollisions()</code> は、1フレームごとに
+        <ol>
+          <li>すべての敵について、すべての弾との当たり判定を行い、当たっていれば弾と敵を消してスコアを加算。</li>
+          <li>次に、すべての敵について自機との当たり判定を行い、当たっていればライフを減らし、0以下ならゲームをリセット。</li>
+        </ol>
+      </li>
+      <li>当たり判定そのものは <code>rectsIntersect()</code> が担当し、四角形同士が重なっているかどうかを数式で判断している。</li>
+    </ul>
+
+    <h2>確認問題</h2>
+
     <ol>
       <li>
         <span class="code-sample">import { player } from "./player.js";</span> の
@@ -88,7 +295,7 @@ function rectsIntersect(a, b) {
 
       <li>
         <span class="code-sample">{ player } や { enemies }</span> の
-        <span class="fill-blank" data-answer="波かっこ（ブレース）"></span> は、モジュールの中から
+        <span class="fill-blank" data-answer="波かっこ"></span> は、モジュールの中から
         <span class="fill-blank" data-answer="名前のついた関数・オブジェクトだけ取り出す"></span> 書き方です。
       </li>
 

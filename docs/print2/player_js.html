@@ -45,7 +45,108 @@ export function drawPlayer(ctx) {
     <details>
       <summary>playerオブジェクトについて</summary><a href="https://codepen.io/tomohiro-adachi/pen/qEZPjqy">こちらをクリックしてください。</a>
     </details>
+    
+      <!-- ▼ 説明セクション追加 ▼ -->
+
+    <h2>1. player.js の役割</h2>
+
+    <p>
+      <code>player.js</code> は、ゲームで動かす「自機（プレイヤー）」を管理するモジュールです。  
+      このファイルの役目は次の3つです：
+    </p>
+
+    <ul>
+      <li>① プレイヤーの状態（位置・大きさ・ライフ・スコア）をまとめて管理する</li>
+      <li>② プレイヤーの初期位置を設定する</li>
+      <li>③ プレイヤーを canvas に描画する</li>
+    </ul>
+
+    <p>
+      敵や弾と違い、プレイヤーは基本的に 1 体だけなので、配列ではなくオブジェクトで管理しています。
+    </p>
+
+    <h2>2. 画像の読み込み</h2>
+
+    <pre><code>const playerImage = new Image();
+playerImage.src = "player.png";</code></pre>
+
+    <ul>
+      <li><code>new Image()</code> は「画像を扱うための特別なオブジェクト」を作る</li>
+      <li><code>src</code> にファイル名を入れると、画像が読み込まれる</li>
+      <li>ゲームではこの画像がプレイヤーの見た目として使われる</li>
+    </ul>
+
+    <h2>3. プレイヤーの情報をまとめた player オブジェクト</h2>
+
+    <pre><code>export const player = {
+    x: 0,
+    y: 0,
+    width: 30,
+    height: 30,
+    color: "yellow",
+    life: 3,
+    score: 0,
+};</code></pre>
+
+    <h3>このオブジェクトに含まれる情報</h3>
+
+    <ul>
+      <li><code>x, y</code> … プレイヤーの画面上の位置</li>
+      <li><code>width, height</code> … プレイヤーの大きさ</li>
+      <li><code>color</code> … 画像読み込み前の予備色（現在は未使用）</li>
+      <li><code>life: 3</code> … ライフ（体力）</li>
+      <li><code>score: 0</code> … 得点</li>
+    </ul>
+
+    <p>
+      <strong>export</strong> しているため、<br>
+      <code>main.js</code> や <code>collision.js</code> から <code>import { player }</code> として読み込めます。
+    </p>
+
+    <h2>4. 初期位置を決める initPlayer()</h2>
+
+    <pre><code>export function initPlayer(canvas) {
+    player.x = canvas.width / 2 - player.width / 2;
+    player.y = canvas.height - 60;
+    console.log("Player:", player);
+}</code></pre>
+
+    <p>この関数は、ゲームの最初に一度だけ呼ばれます。</p>
+
+    <h3>やっていること</h3>
+
+    <ul>
+      <li><code>player.x</code> → 画面の横中央に置く</li>
+      <li><code>player.y</code> → 画面の一番下から少し上に置く</li>
+      <li>位置を決めたらログに出力（デバッグ用）</li>
+    </ul>
+
+    <details>
+      <summary>横方向の中央に配置する計算式の意味</summary>
+      <p>
+        <code>canvas.width / 2</code> は中央の位置。  
+        プレイヤーの幅の半分を引くことで、真ん中にぴったり配置できる。
+      </p>
+    </details>
+
+    <h2>5. プレイヤーを描画する drawPlayer()</h2>
+
+    <pre><code>ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);</code></pre>
+
+    <ul>
+      <li>読み込んだ画像 <code>playerImage</code> を</li>
+      <li>player の位置 <code>(x, y)</code> に</li>
+      <li>指定された大きさ <code>(width, height)</code> で描画する</li>
+    </ul>
+
+    <p>
+      この関数はゲームループの中で毎フレーム呼ばれ、  
+      常に最新のプレイヤー位置が表示される仕組みです。
+    </p>
+
+    <!-- ▼ 基礎問題 ▼ -->
     <h2>基礎の穴埋め問題</h2>
+
     <ol>
       <li>
         <span class="code-sample">new Image()</span> は画像を
