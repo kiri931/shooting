@@ -1,3 +1,4 @@
+import { player } from "./player.js";
 export const enemies = [];
 const SIZE = 50;
 const enemyImage = new Image();
@@ -8,13 +9,14 @@ function pushEnemies(canvas) {
   const h = SIZE;
   const x = Math.random() * (canvas.width - w);
   const y = 0;
+  let vx = 0;
   const vy = 5
 
   enemies.push({ x, y, width: w, height: h, vy });
 }
 
 export function spawnEnemy(canvas) {
- if (enemies.length < 10) {
+ if (enemies.length < 5) {
     pushEnemies(canvas);
  }
 }
@@ -23,8 +25,14 @@ export function updateEnemies(canvas) {
   for (let i = enemies.length - 1; i >= 0; i--) {
     const e = enemies[i];
     e.y += e.vy;
+    if(player.x>e.x){
+      e.x += 1;
+    }else if(player.x<e.x){
+      e.x -= 1;
+    }
     if (e.y > canvas.height) {
-      enemies.splice(i, 1);
+      enemies.splice(i,1);
+
     }
   }
 }
