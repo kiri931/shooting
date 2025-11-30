@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>情プロ JavaScript解説（main.js）</title>
+  <title>情プロ main.js</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -16,7 +16,7 @@
   </header>
 
   <main>
-    <h1>情プロ シューティングゲーム用Javascript No.4（main.js）</h1>
+    <h1>情プロ main.js</h1>
 
     <pre><code class="code-sample">
 import { player, initPlayer, drawPlayer } from "./player.js";
@@ -102,13 +102,15 @@ function gameLoop() {
 
 gameLoop();
     </code></pre>
-
+    <details>
+      <summary>main.jsについて</summary><a href="https://codepen.io/tomohiro-adachi/pen/MYyGrEy">こちらをクリックしてください。</a>
+    </details>
     <!-- ▼ 説明セクション ▼ -->
 
     <h2>1. main.js の役割</h2>
 
     <p>
-      <strong>main.js</strong> は、このシューティングゲームの「中心となる処理」を担当するファイルです。  
+      <strong>main.js</strong> は、このシューティングゲームの「中心となる処理」を担当するファイルです。
       具体的には次のような役割があります：
     </p>
 
@@ -132,7 +134,7 @@ import { spawnEnemy, enemies, updateEnemies, drawEnemies } from "./enemies.js";
 import { handleCollisions } from "./collision.js";</code></pre>
 
     <p>
-      必要な機能を各ファイルから読み込みます。  
+      必要な機能を各ファイルから読み込みます。
       これにより main.js から敵生成・自機描画・当たり判定が使えるようになります。
     </p>
 
@@ -158,7 +160,7 @@ mapImage.src = "map.png";</code></pre>
     <pre><code>initPlayer(canvas);</code></pre>
 
     <p>
-      この1行で、自機（player）の初期位置が画面中央に設定されます。  
+      この1行で、自機（player）の初期位置が画面中央に設定されます。
       呼び出すだけで初期位置がバチッと決まるのは player.js がしっかり作られているおかげです。
     </p>
 
@@ -168,7 +170,7 @@ mapImage.src = "map.png";</code></pre>
 const BULLET_SPEED = -5;</code></pre>
 
     <p>
-      bullets は「画面上に存在する弾の一覧」を保存する配列です。  
+      bullets は「画面上に存在する弾の一覧」を保存する配列です。
       弾は上方向へ飛ぶため <code>BULLET_SPEED = -5</code> としています。
     </p>
 
@@ -260,7 +262,7 @@ const BULLET_SPEED = -5;</code></pre>
     </ol>
 
     <p>
-      順番が違うと背景でプレイヤーが隠れたりするため、  
+      順番が違うと背景でプレイヤーが隠れたりするため、
       正しい順で描くことはゲーム制作の基本です。
     </p>
 
@@ -287,7 +289,8 @@ const BULLET_SPEED = -5;</code></pre>
     <h2>基礎の穴埋め問題</h2>
     <ol>
       <li><code>canvas.getContext("2d")</code> は、図形や画像を描くための
-        <span class="fill-blank" data-answer="描画用オブジェクト（ctx）"></span> を取得する処理です。</li>
+        <span class="fill-blank" data-answer="描画用オブジェクト（ctx）"></span> を取得する処理です。
+      </li>
 
       <li>
         <code>bullets</code> は画面上の
@@ -323,13 +326,16 @@ const BULLET_SPEED = -5;</code></pre>
     <h2>応用問題</h2>
     <ol>
       <li>自機の移動速度（左右）をもっと速くしたい場合、どの値を変える？
-        <span class="fill-blank" data-answer="player.x += 10（10 の部分）"></span></li>
+        <span class="fill-blank" data-answer="player.x += 10（10 の部分）"></span>
+      </li>
 
       <li>敵の出現数を増やしたい場合、どのファイルのどの部分を変える？
-        <span class="fill-blank" data-answer="enemies.js の enemies.length < 10"></span></li>
+        <span class="fill-blank" data-answer="enemies.js の enemies.length < 10"></span>
+      </li>
 
       <li>弾の大きさを変えたい場合、どこの値を変更する？
-        <span class="fill-blank" data-answer="tryShoot() 内の width と height"></span></li>
+        <span class="fill-blank" data-answer="tryShoot() 内の width と height"></span>
+      </li>
 
       <li>ゲームオーバー後にリロードせずに「Game Over」と表示したい場合、どの関数を改造すればよい？
         <span class="fill-blank" data-answer="collision.js の handleCollisions()"></span>
