@@ -79,16 +79,6 @@ span.code-sample {
   /* 折り返さず1つの塊として表示 */
 }
 
-/* コードブロック */
-pre {
-  background: var(--code-bg);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 0.5em 1em;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
 /* 大きなコードブロック（強調） */
 pre code.code-sample {
   display: block;
@@ -246,4 +236,27 @@ td {
 
 a {
   color: red;
+}
+
+.title-row {
+  display: flex;
+  justify-content: space-between; /* h2（左）と your-point（右） */
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.your-point {
+  display: flex;
+  align-items: center;
+  gap: 100px; /* ← いい感じの距離 */
+  font-size: 18px;
+  color: #333;
+}
+
+.your-point .label {
+  font-weight: bold;
+}
+
+.your-point .total {
+  opacity: 0.8;
 }
