@@ -64,7 +64,7 @@ ol li {
    - pre は共通の見た目
    ========================================================= */
 code {
-  font-family: "Consolas", "Courier New", monospace;
+  font-family: "Source Code Pro", monospace;
 }
 
 /* インラインコード（文章の途中） */
@@ -240,15 +240,18 @@ a {
 
 .title-row {
   display: flex;
-  justify-content: space-between; /* h2（左）と your-point（右） */
+  justify-content: space-between;
+  /* h2（左）と your-point（右） */
   align-items: center;
+  width: 100%;
   margin-bottom: 0px;
 }
 
 .your-point {
   display: flex;
   align-items: center;
-  gap: 100px; /* ← いい感じの距離 */
+  gap: 100px;
+  /* ← いい感じの距離 */
   font-size: 18px;
   color: #333;
 }
@@ -263,16 +266,73 @@ a {
 
 /* h2 の下の余白を小さく */
 h2 {
-  margin-bottom: 0em; /* ← デフォルトより小さめ */
-  margin-top: 1.2em;    /* 必要なら調整、不要なら消してOK */
+  margin-bottom: 0em;
+  /* ← デフォルトより小さめ */
+  margin-top: 0em;
+  /* 必要なら調整、不要なら消してOK */
 }
 
 /* 全体の行間を小さくしたい場合（文章部分に適用） */
-p, li {
-  line-height: 1.4; /* ← 現状 1.6 → 1.4 に調整 */
+p,
+li {
+  line-height: 1.4;
+  /* ← 現状 1.6 → 1.4 に調整 */
 }
 
 /* リスト項目の上下間隔も少し縮める */
 ol li {
-  margin: 0.4em 0; /* ← 今 0.8em → 半分に */
+  margin: 0.4em 0;
+  /* ← 今 0.8em → 半分に */
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+td {
+  border: 1px solid #000;
+  height: 40px;
+  /* 高さ固定 */
+  text-align: left;
+  /* ← ★ 左寄せ */
+  vertical-align: middle;
+  padding-left: 8px;
+  /* ← ★ 左に余白（調整可） */
+  font-size: 16px;
+}
+/* 親OL（第1階層） */
+ol.level1 {
+  counter-reset: section; /* ← 大問番号カウンタ名を section に統一 */
+}
+
+ol.level1 > li {
+  counter-increment: section;
+  list-style: none;
+  margin: 20px 0;
+}
+
+ol.level1 > li::before {
+  content: counter(section) " ";
+  font-weight: bold;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+
+/* 子OL（第2階層） */
+ol.level2 {
+  counter-reset: subsection; /* 小問番号リセット */
+  list-style-type: none;
+  padding-left: 30px;
+}
+
+ol.level2 > li {
+  counter-increment: subsection;
+  margin: 4px 0;
+}
+
+ol.level2 > li::before {
+  /* ★ 正しい階層番号生成 */
+  content: counter(section) "." counter(subsection) " ";
 }
