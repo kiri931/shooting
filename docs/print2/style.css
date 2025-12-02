@@ -242,7 +242,7 @@ a {
   display: flex;
   justify-content: space-between; /* h2（左）と your-point（右） */
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 0px;
 }
 
 .your-point {
@@ -259,4 +259,20 @@ a {
 
 .your-point .total {
   opacity: 0.8;
+}
+
+/* h2 の下の余白を小さく */
+h2 {
+  margin-bottom: 0em; /* ← デフォルトより小さめ */
+  margin-top: 1.2em;    /* 必要なら調整、不要なら消してOK */
+}
+
+/* 全体の行間を小さくしたい場合（文章部分に適用） */
+p, li {
+  line-height: 1.4; /* ← 現状 1.6 → 1.4 に調整 */
+}
+
+/* リスト項目の上下間隔も少し縮める */
+ol li {
+  margin: 0.4em 0; /* ← 今 0.8em → 半分に */
 }

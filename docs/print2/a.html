@@ -20,7 +20,9 @@
         <h1>情報プログレス</h1>
         <ol>
             <div class="title-row">
-                <h2><li>次の質問に答えなさい。</li></h2>
+                <h2>
+                    <li>次の質問に答えなさい。</li>
+                </h2>
 
                 <div class="your-point">
                     <span class="label">知識</span>
@@ -38,13 +40,20 @@
                 <li>関数の内部から「値を呼び出し元へ返す」ために使うキーワードは何か。<!-- return --></li>
                 <li>JavaScript で「再代入不可の変数」を宣言するときに使うキーワードは何か。<!-- const --></li>
                 <li>JavaScript で「再代入可能な変数」を宣言するときに使うキーワードは何か。<!-- let --></li>
-                <li>HTML5 Canvas で、<strong>画像</strong>をキャンバスに描画するときに用いる2D コンテキストのメソッドは何か。<!-- drawImage --></li>
+                <li>HTML5 Canvas で、<u>画像をキャンバスに描画するときに用いる</u>2D コンテキストのメソッドは何か。<!-- drawImage --></li>
             </ol>
-            <h2>
-                <li>次のプログラムを読んで、後の問いに答えなさい。</li>
-            </h2>
-            <pre><code class="code-sample">
-import { player, initPlayer, drawPlayer } from "./player.js";
+            <div class="title-row">
+                <h2>
+                    <li>プログラムを読んで、質問に答えなさい。</li>
+                </h2>
+
+                <div class="your-point">
+                    <span class="label">知識</span>
+                    <span class="total">/ 20</span>
+                </div>
+            </div>
+
+            <pre><code class="code-sample">import { player, initPlayer, drawPlayer } from "./player.js";
 import { spawnEnemy, enemies, updateEnemies, drawEnemies } from "./enemies.js";
 import { handleCollisions } from "./collision.js";
 
@@ -125,61 +134,71 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-gameLoop();
-    </code></pre>
+gameLoop();</code></pre>
+
 
             <ol>
                 <li>このプログラムにおいて、図形や画像を描くための描画用オブジェクトは何か。<!-- ctx --></li>
                 <li>弾配列の一覧を管理している変数は何か。<!-- bullets --></li>
                 <li>球を発射する関数は何か。<!-- tryShoot() --></li>
                 <li><code>window.addEventListener("keydown")</code> は何を処理する機能か。<!-- キー入力 --></li>
-
-                <li>
-                    <code>update()</code> はゲームの
-                    <span class="fill-blank" data-answer="状態（弾の動き・敵の動き・当たり判定など）を更新する"></span> 関数です。
-                </li>
-
-                <li>
-                    <code>draw()</code> は
-                    <span class="fill-blank" data-answer="画面に描画する処理"></span> をまとめた関数です。
-                </li>
-
-                <li>
-                    <code>requestAnimationFrame()</code> は毎フレームごとに
-                    <span class="fill-blank" data-answer="gameLoop を呼び出す"></span> 関数です。
-                </li>
-
-                <li>自機の移動速度（左右）をもっと速くしたい場合、どの値を変える？
-                    <span class="fill-blank" data-answer="player.x += 10（10 の部分）"></span>
-                </li>
-
-                <li>敵の出現数を増やしたい場合、どのファイルのどの部分を変える？
-                    <span class="fill-blank" data-answer="enemies.js の enemies.length < 10"></span>
-                </li>
-
-                <li>弾の大きさを変えたい場合、どこの値を変更する？
-                    <span class="fill-blank" data-answer="tryShoot() 内の width と height"></span>
-                </li>
-
-                <li>ゲームオーバー後にリロードせずに「Game Over」と表示したい場合、どの関数を改造すればよい？
-                    <span class="fill-blank" data-answer="collision.js の handleCollisions()"></span>
-                </li>
-
-                <li>背景画像を動かしてスクロール演出をしたい場合、どの処理を追加する必要がある？
-                    <span class="fill-blank" data-answer="draw() 内で mapImage の描画位置を変える処理"></span>
-                </li>
+                <li><code>update()</code> は何をアップデートしているか。<!-- 状態 --></li>
+                <li><code>requestAnimationFrame()</code> がゲームループを呼び出すタイミングはいつか。<!-- フレーム --></li>
+                <li>自機の移動速度を変えたい場合、どの値を変えるべきか。<!-- player.x += 10 --></li>
+                <li>弾の大きさを変えたい場合、どこの値を変更するべきか。<!-- tryShoot() 内の width と height --></li>
+                <li>背景画像を動かしてスクロール演出をしたい場合、どのような画像を用いると良いか。<!-- 上端と下端がつながるような画像・タイル状の画像 --></li>
             </ol>
 
 
             <h2>
                 <li>以下のプログラムについて、内容を確認して、問いに答えなさい。</li>
             </h2>
-            <pre><code class="code-sample">
-import { player } from "./player.js";
+            <pre><code class="code-sample">import { player } from "./player.js";
 import { enemies } from "./enemies.js";
 import { bullets } from "./main.js";
 
+export function handleCollisions() {
+  // 弾 × 敵
+  for (let ei = enemies.length - 1; ei >= 0; ei--) {
+    const e = enemies[ei];
+    let hit = false;
 
+    for (let bi = bullets.length - 1; bi >= 0; bi--) {
+      const b = bullets[bi];
+      if (rectsIntersect(
+        { x: b.x, y: b.y, width: b.width, height: b.height },
+        { x: e.x, y: e.y, width: e.width, height: e.height }
+      )) {
+        // 命中：弾と敵を削除、スコア加算
+        bullets.splice(bi, 1);
+        enemies.splice(ei, 1);
+        player.score += 1;
+        console.log("Score:", player.score);
+        hit = true;
+        break; // この敵は消えたので次の敵へ
+      }
+    }
+
+    if (hit) continue;
+  }
+
+  // 自機 × 敵（ゲームオーバー）
+  for (let ei = enemies.length - 1; ei >= 0; ei--) {
+    const e = enemies[ei];
+    if (rectsIntersect(
+      { x: player.x, y: player.y, width: player.width, height: player.height },
+      { x: e.x, y: e.y, width: e.width, height: e.height }
+    )) {
+      player.life -= 1;
+      if (player.life &lt;= 0) {
+        document.location.reload();
+      }
+      enemies.splice(ei, 1);
+      console.log("Player Life:", player.life);
+      break;
+    }
+  }
+}
 
 function rectsIntersect(a, b) {
   return (
@@ -188,8 +207,7 @@ function rectsIntersect(a, b) {
     a.y &lt; b.y + b.height &amp;&amp;
     a.y + a.height &gt; b.y
   );
-}
-    </code></pre>
+}</code></pre>
             <ol>
                 <li><span class="code-sample">handleCollisions()</span> 関数の役割は、弾と敵、自機と敵の<span class="fill-blank"
                         data-answer="当たり判定"></span>を行うことです。</li>
@@ -247,8 +265,179 @@ function rectsIntersect(a, b) {
                 </li>
             </ol>
 
+            <pre><code class="code-sample">export const enemies = [];
+const SIZE = 50;
+const enemyImage = new Image();
+enemyImage.src = "enemy.png";
 
+function pushEnemies(canvas) {
+  const w = SIZE;
+  const h = SIZE;
+  const x = Math.random() * (canvas.width - w);
+  const y = 0;
+  const vy = 5
 
+  enemies.push({ x, y, width: w, height: h, vy });
+}
+
+export function spawnEnemy(canvas) {
+ if (enemies.length < 10) {
+    pushEnemies(canvas);
+ }
+}
+
+export function updateEnemies(canvas) {
+  for (let i = enemies.length - 1; i >= 0; i--) {
+    const e = enemies[i];
+    e.y += e.vy;
+    if (e.y > canvas.height) {
+      enemies.splice(i, 1);
+    }
+  }
+}
+
+export function drawEnemies(ctx) {
+  for (const e of enemies) {
+     ctx.drawImage(enemyImage, e.x, e.y, e.width, e.height);
+  }
+}</code></pre>
+            <ol>
+
+                <li>
+                    <span class="code-sample">export const enemies = [];</span> は、
+                    <span class="fill-blank" data-answer="敵キャラを保存する配列"></span>
+                    を他ファイルに公開しています。
+                </li>
+                <li>敵の大きさを変えるには、なにを変更するか。<!-- SIZE --></li>
+                <li>このプログラムでは敵画像はなんというファイル名か。<!-- enemy.png --></li>
+                <li><code>pushEnemies()</code> はどのような処理を行う関数か。<!-- 敵を一体増やす --></li>
+                <li><code>Math.random() * (canvas.width - w)</code> は、敵の位置をどのようにするか。<!-- ランダムな位置 --></li>
+                <li><code>spawnEnemy()</code> はどのような処理を行う関数か。<!-- 敵をスポーンさせる --></li>
+                <li><code>updateEnemies()</code> は敵をどの方向に動かす処理か。<!-- 下方向 --></li>
+
+                <li>
+                    敵が画面外に出たら <span class="code-sample">splice</span> で
+                    <span class="fill-blank" data-answer="配列から削除"></span> します。
+                </li>
+
+                <li>
+                    <span class="code-sample">drawEnemies()</span> は全ての敵を
+                    <span class="fill-blank" data-answer="canvas に描画"></span> します。
+                </li>
+
+                <li>
+                    敵のスピードを 5 から 10 にしたい場合、どの変数を変更する？
+                    <span class="fill-blank" data-answer="vy"></span>
+                </li>
+
+                <li>
+                    敵の数をもっと増やしたい場合、どこの値を変更すれば良いか？
+                    <span class="fill-blank" data-answer="spawnEnemy 内の enemies.length < 10"></span>
+                </li>
+
+                <li>
+                    敵を大きくしたいならどこを直す？
+                    <span class="fill-blank" data-answer="SIZE"></span>
+                </li>
+
+                <li>
+                    同じ画像ではなく、複数種類の敵を作りたい場合、どの関数を改造すると良いか？
+                    <span class="fill-blank" data-answer="pushEnemies()"></span>
+                </li>
+            </ol>
+            <pre><code class="code-sample">const playerImage = new Image();
+playerImage.src = "player.png";
+
+export const player = {
+    x: 0,
+    y: 0,
+    width: 30,
+    height: 30,
+    color: "yellow",
+    life: 3,
+    score: 0,
+};
+
+export function initPlayer(canvas) {
+    player.x = canvas.width / 2 - player.width / 2;
+    player.y = canvas.height - 60;
+    console.log("Player:", player);
+}
+
+export function drawPlayer(ctx) {
+    ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
+}</code></pre>
+
+            <ol>
+                <li>
+                    <span class="code-sample">new Image()</span> は画像を
+                    <span class="fill-blank" data-answer="読み込むためのオブジェクト"></span> を作っています。
+                </li>
+
+                <li>
+                    <span class="code-sample">playerImage.src = "player.png";</span> は画像ファイルを
+                    <span class="fill-blank" data-answer="指定して読み込む"></span> 処理です。
+                </li>
+
+                <li>
+                    <span class="code-sample">export const player = { ... }</span> の部分は、プレイヤーの
+                    <span class="fill-blank" data-answer="状態（位置・大きさ・スコアなど）"></span>
+                    をまとめた <span class="fill-blank" data-answer="オブジェクト"></span> です。
+                </li>
+
+                <li>
+                    player.width = 30 などの設定値は、プレイヤーの
+                    <span class="fill-blank" data-answer="見た目のサイズ"></span> を決めています。
+                </li>
+
+                <li>
+                    <span class="code-sample">life: 3</span> はプレイヤーの
+                    <span class="fill-blank" data-answer="ライフ（体力）"></span> を意味します。
+                </li>
+
+                <li>
+                    <span class="code-sample">score: 0</span> はゲーム中の
+                    <span class="fill-blank" data-answer="得点"></span> を表します。
+                </li>
+
+                <li>
+                    <span class="code-sample">initPlayer(canvas)</span> はプレイヤーの
+                    <span class="fill-blank" data-answer="初期位置"></span>
+                    をセットする関数です。
+                </li>
+
+                <li>
+                    <span class="code-sample">canvas.width / 2 - player.width / 2</span> は
+                    プレイヤーを横方向の
+                    <span class="fill-blank" data-answer="中央"></span> に配置します。
+                </li>
+
+                <li>
+                    <span class="code-sample">drawPlayer(ctx)</span> は
+                    プレイヤー画像を
+                    <span class="fill-blank" data-answer="canvas に描画する関数"></span> です。
+                </li>
+                <li>
+                    プレイヤーをもっと大きくしたい場合、どの値を変更すれば良いか？
+                    <span class="fill-blank" data-answer="player.width と player.height"></span>
+                </li>
+
+                <li>
+                    プレイヤー画像が表示されないとき、確認すべき2つのポイントを書きなさい。
+                    <span class="fill-blank" data-answer="ファイル名と画像の場所"></span>
+                </li>
+
+                <li>
+                    プレイヤーの初期位置をもっと上にしたい場合、何の値を変更する？
+                    <span class="fill-blank" data-answer="player.y の計算式"></span>
+                </li>
+
+                <li>
+                    スコアを増やす処理は他ファイルにある。player.js でスコアを変更せずに、
+                    どこからでもスコアが参照できる理由は？
+                    <span class="fill-blank" data-answer="player が export されているため"></span>
+                </li>
+            </ol>
         </ol>
     </main>
     <script src="ui.js"></script>
