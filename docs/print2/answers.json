@@ -1,0 +1,61 @@
+{
+  "1": [
+    "モジュール",
+    "import文",
+    "export文",
+    "console.log()",
+    "function",
+    "splice",
+    "return",
+    "const",
+    "let",
+    "drawImage"
+  ],
+  "2": [
+    "ctx",
+    "bullets",
+    "tryShoot()",
+    "キー入力",
+    "状態",
+    "フレーム",
+    "player.x += 10",
+    "tryShoot() 内の width と height",
+    "上端と下端がつながるような画像・タイル状の画像"
+  ],
+  "3": [
+    "当たり判定",
+    "spliceしてもインデックスがずれないため",
+    "フラグ",
+    "ライフが0以下になったらページを再読み込みしてゲームを最初からにする処理",
+    "2つの四角形が重なっているかどうか",
+    "真偽値（true または false）",
+    "AABB（軸平行境界ボックス）",
+    "アルゴリズム",
+    "continue",
+    "player.score += 1 を変更する",
+    "enemies 配列の各オブジェクトに score プロパティを追加し、当たり判定で加算するスコアを変える",
+    "当たったらすぐ reload するだけにする"
+  ],
+  "4": [
+    "enemies",
+    "SIZE",
+    "enemy.png",
+    "敵を一体増やす",
+    "ランダムな位置",
+    "敵をスポーンさせる",
+    "下方向",
+    "配列から削除",
+    "敵を描画する",
+    "spawnEnemy 内の enemies.length < 10",
+    "pushEnemies()",
+    "プレイヤー画像を読み込む"
+  ],
+  "5": [
+    "プレイヤーの位置・大きさ・色・ライフ・スコア",
+    "初期位置",
+    "canvas.width / 2 - player.width / 2",
+    "プレイヤーを描画する",
+    "player.width",
+    "initPlayer()"
+  ]
+}
