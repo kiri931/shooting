@@ -57,5 +57,11 @@
     "プレイヤーを描画する",
     "player.width",
     "initPlayer()"
+  ],
+  "6": [
+    "name: \"たま\"",
+    "age: 3",
+    "color: \"black\"",
+    "favoriteFood: \"魚\""
   ]
 }
