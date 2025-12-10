@@ -1,26 +1,26 @@
 {
   "1": [
     "モジュール",
-    "import文",
-    "export文",
+    "import",
+    "export",
     "console.log()",
     "function",
     "splice",
     "return",
     "const",
     "let",
-    "drawImage"
+    "drawImage(全員配点)"
   ],
   "2": [
     "ctx",
     "bullets",
     "tryShoot()",
     "キー入力",
-    "状態",
+    "状態(球が端にいくと消える、敵の出現、衝突判定、スコア)",
     "フレーム",
     "player.x += 10",
-    "tryShoot() 内の width と height",
-    "上端と下端がつながるような画像・タイル状の画像"
+    "width と height",
+    "上端と下端がつながるような画像"
   ],
   "3": [
     "当たり判定",
@@ -31,32 +31,27 @@
     "真偽値（true または false）",
     "AABB（軸平行境界ボックス）",
     "アルゴリズム",
-    "continue",
+    "continue(breakも可)",
     "player.score += 1 を変更する",
     "enemies 配列の各オブジェクトに score プロパティを追加し、当たり判定で加算するスコアを変える",
-    "当たったらすぐ reload するだけにする"
+    "全員得点とします"
   ],
   "4": [
     "enemies",
     "SIZE",
     "enemy.png",
-    "敵を一体増やす",
     "ランダムな位置",
     "敵をスポーンさせる",
     "下方向",
     "配列から削除",
     "敵を描画する",
     "spawnEnemy 内の enemies.length < 10",
-    "pushEnemies()",
-    "プレイヤー画像を読み込む"
+    "pushEnemies()"
   ],
   "5": [
     "プレイヤーの位置・大きさ・色・ライフ・スコア",
     "初期位置",
-    "canvas.width / 2 - player.width / 2",
-    "プレイヤーを描画する",
-    "player.width",
-    "initPlayer()"
+    "canvas.width / 2 - player.width / 2"
   ],
   "6": [
     "name: \"たま\"",
