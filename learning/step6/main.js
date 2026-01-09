@@ -17,8 +17,9 @@ const input = {
 };
 
 // 弾（配列ではなく、1個だけ持つ）
-// まだ撃っていないときは null
-let bullet = null;
+// Step6では「配列」で持ちつつ、1発だけに制限する
+// （Step7でこの制限を外して複数にする）
+const bullets = [];
 
 const mapImage = new Image();
 mapImage.src = "../image/map.png";
@@ -32,13 +33,13 @@ window.addEventListener("keydown", (e) => {
 
   // Space を押したら弾を作る（弾が無いときだけ）
   if (e.code === "Space") {
-    if (bullet === null) {
-      bullet = {
+    if (bullets.length === 0) {
+      bullets.push({
         size: 10,
         x: player.x + player.width / 2 - 10 / 2,
         y: player.y,
         vy: -8,
-      };
+      });
     }
   }
 });
@@ -58,13 +59,14 @@ function update() {
     player.x = canvas.width - player.width;
   }
 
-  // 弾の移動（弾があるときだけ）
-  if (bullet !== null) {
-    bullet.y += bullet.vy;
+  // 弾の移動（配列だが、Step6では最大1個）
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    const b = bullets[i];
+    b.y += b.vy;
 
     // 画面の外に出たら弾を消す（また撃てるようになる）
-    if (bullet.y + bullet.size < 0) {
-      bullet = null;
+    if (b.y + b.size < 0) {
+      bullets.splice(i, 1);
     }
   }
 }
@@ -87,12 +89,13 @@ function draw() {
   }
 
   // 弾（白い丸）
-  if (bullet !== null) {
-    const r = bullet.size / 2;
-    const cx = bullet.x + r;
-    const cy = bullet.y + r;
+  ctx.fillStyle = "white";
+  for (let i = 0; i < bullets.length; i++) {
+    const b = bullets[i];
+    const r = b.size / 2;
+    const cx = b.x + r;
+    const cy = b.y + r;
 
-    ctx.fillStyle = "white";
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, Math.PI * 2);
     ctx.fill();

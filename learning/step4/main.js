@@ -11,7 +11,7 @@ const player = {
 
 // 画像を読み込む
 const playerImage = new Image();
-// larning/step4 から見た相対パス（larning/image/player.png）
+// learning/step4 から見た相対パス（learning/image/player.png）
 playerImage.src = "../image/player.png";
 
 let isImageLoaded = false;

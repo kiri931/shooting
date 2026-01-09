@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Playground</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <header class="header header-row">
+    <div>
+      <a class="back" href="index.html">← 一覧へ</a>
+      <h1 id="pageTitle">Playground</h1>
+      <p class="sub" id="pageSub">左: サンプル / 右: 自分のコード</p>
+    </div>
+    <div class="header-actions">
+      <button id="runBtn" class="btn">実行</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <section class="col">
+      <h2 class="h2">サンプル</h2>
+      <div class="iframeWrap">
+        <iframe id="sampleFrame" title="sample"></iframe>
+      </div>
+      <div class="links">
+        <a id="sampleOpen" target="_blank" rel="noreferrer">サンプルを別タブで開く</a>
+      </div>
+    </section>
+
+    <section class="col">
+      <h2 class="h2">自分の実行</h2>
+      <div class="iframeWrap">
+        <iframe id="outFrame" title="output"></iframe>
+      </div>
+      <div id="status" class="status"></div>
+
+      <div class="editors">
+        <div class="editor">
+          <div class="label">HTML</div>
+          <textarea id="htmlText" spellcheck="false"></textarea>
+        </div>
+        <div class="editor">
+          <div class="label">CSS</div>
+          <textarea id="cssText" spellcheck="false"></textarea>
+        </div>
+        <div class="editor">
+          <div class="label">JavaScript</div>
+          <textarea id="jsText" spellcheck="false"></textarea>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="playground.js"></script>
+</body>
+
+</html>
