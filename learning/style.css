@@ -1,13 +1,130 @@
+/* Theme control (auto/light/dark)
+   - auto: follows prefers-color-scheme
+   - light: pastel palette
+   - dark: VS Code-like palette
+*/
+:root {
+  color-scheme: light;
+  --bg: #f6f7ff;
+  --surface: #ffffff;
+  --surface-2: #eef2ff;
+  --text: #1f2937;
+  --muted: #667085;
+  --border: #d6dbe8;
+  --link: #2563eb;
+  --accent: #7c3aed;
+  --focus: #7c3aed;
+
+  --btn-bg: #eef2ff;
+  --btn-text: #1f2937;
+  --btn-border: #cfd6eb;
+
+  --tab-bg: #ffffff;
+  --tab-active-bg: #eef2ff;
+
+  --code-bg: #f3f4f6;
+  --code-text: #111827;
+  --code-border: #d6dbe8;
+
+  --shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #1e1e1e;
+    --surface: #252526;
+    --surface-2: #2d2d2d;
+    --text: #d4d4d4;
+    --muted: #9aa0a6;
+    --border: #3c3c3c;
+    --link: #3794ff;
+    --accent: #007acc;
+    --focus: #007acc;
+
+    --btn-bg: #2d2d30;
+    --btn-text: #d4d4d4;
+    --btn-border: #3c3c3c;
+
+    --tab-bg: #2d2d2d;
+    --tab-active-bg: #1e1e1e;
+
+    --code-bg: #1e1e1e;
+    --code-text: #d4d4d4;
+    --code-border: #3c3c3c;
+
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  }
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f6f7ff;
+  --surface: #ffffff;
+  --surface-2: #eef2ff;
+  --text: #1f2937;
+  --muted: #667085;
+  --border: #d6dbe8;
+  --link: #2563eb;
+  --accent: #7c3aed;
+  --focus: #7c3aed;
+
+  --btn-bg: #eef2ff;
+  --btn-text: #1f2937;
+  --btn-border: #cfd6eb;
+
+  --tab-bg: #ffffff;
+  --tab-active-bg: #eef2ff;
+
+  --code-bg: #f3f4f6;
+  --code-text: #111827;
+  --code-border: #d6dbe8;
+
+  --shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #1e1e1e;
+  --surface: #252526;
+  --surface-2: #2d2d2d;
+  --text: #d4d4d4;
+  --muted: #9aa0a6;
+  --border: #3c3c3c;
+  --link: #3794ff;
+  --accent: #007acc;
+  --focus: #007acc;
+
+  --btn-bg: #2d2d30;
+  --btn-text: #d4d4d4;
+  --btn-border: #3c3c3c;
+
+  --tab-bg: #2d2d2d;
+  --tab-active-bg: #1e1e1e;
+
+  --code-bg: #1e1e1e;
+  --code-text: #d4d4d4;
+  --code-border: #3c3c3c;
+
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
 body {
   margin: 0;
-  background: Canvas;
-  color: CanvasText;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
 }
 
 .header {
   padding: 16px;
-  border-bottom: 1px solid ButtonBorder;
-  background: Canvas;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.header a {
+  color: var(--link);
 }
 
 .header-row {
@@ -17,6 +134,45 @@ body {
   gap: 16px;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.themeLabel {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.select {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.saveInfo {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.fileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 h1 {
   margin: 0;
   font-size: 20px;
@@ -24,7 +180,7 @@ h1 {
 
 .sub {
   margin: 6px 0 0;
-  color: GrayText;
+  color: var(--muted);
   font-size: 14px;
 }
 
@@ -38,9 +194,11 @@ h1 {
 }
 
 .panel {
-  background: Canvas;
-  border: 1px solid ButtonBorder;
+  background: var(--surface);
+  border: 1px solid var(--border);
   padding: 16px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
 }
 
 .steps {
@@ -60,17 +218,25 @@ h1 {
 .back {
   display: inline-block;
   margin-bottom: 6px;
-  color: LinkText;
+  color: var(--link);
   text-decoration: none;
 }
 
 .btn {
   padding: 8px 12px;
-  border: 1px solid ButtonBorder;
-  background: ButtonFace;
-  color: ButtonText;
-  border-radius: 6px;
+  border: 1px solid var(--btn-border);
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border-radius: 999px;
   cursor: pointer;
+}
+
+.btn:hover {
+  opacity: 0.92;
+}
+
+.btn:active {
+  opacity: 0.85;
 }
 
 .workspace {
@@ -78,6 +244,78 @@ h1 {
   grid-template-columns: 1fr;
   gap: 16px;
   padding: 16px;
+}
+
+.guide {
+  margin: 16px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.guide-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.guide-link {
+  color: var(--link);
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.guide-body {
+  margin: 8px 0 0;
+  padding: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  line-height: 1.6;
+  border-radius: 10px;
+}
+
+.guide-body h3 {
+  margin: 10px 0 6px;
+  font-size: 14px;
+}
+
+.guide-body p {
+  margin: 6px 0;
+}
+
+.guide-body ul {
+  margin: 6px 0;
+  padding-left: 18px;
+}
+
+.guide-body li {
+  margin: 2px 0;
+}
+
+.guide-body code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  color: var(--code-text);
+}
+
+.guide-body pre {
+  margin: 8px 0;
+  padding: 0;
+  border: 1px solid var(--code-border);
+  background: transparent;
+  overflow: auto;
+  border-radius: 10px;
+}
+
+.guide-body pre code {
+  display: block;
+  white-space: pre;
 }
 
 @media (min-width: 1100px) {
@@ -88,9 +326,11 @@ h1 {
 }
 
 .col {
-  background: Canvas;
-  border: 1px solid ButtonBorder;
+  background: var(--surface);
+  border: 1px solid var(--border);
   padding: 12px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
 }
 
 .h2 {
@@ -99,55 +339,190 @@ h1 {
 }
 
 .iframeWrap {
-  border: 1px solid ButtonBorder;
-  background: CanvasText;
+  border: 1px solid var(--border);
+  background: var(--surface);
   aspect-ratio: 3 / 4;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Controls (theme/editor/code-theme) inside the myTabs row */
+.myTabs {
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.myTabs .sideControls {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.myTabs .controlGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+@media (max-width: 700px) {
+  .myTabs .sideControls {
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-start;
+  }
 }
 
 iframe {
   width: 100%;
   height: 100%;
   border: 0;
-  background: Canvas;
+  background: var(--surface);
 }
 
 .links {
   margin-top: 8px;
 }
 
+.sampleCode {
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.sampleCode {
+  --sample-editor-bg: var(--code-bg);
+  --sample-editor-text: var(--code-text);
+}
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.tab {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  background: var(--tab-bg);
+  color: var(--text);
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.tab[aria-selected="true"] {
+  background: var(--tab-active-bg);
+  border-color: var(--accent);
+}
+
+.codeBody {
+  background: var(--sample-editor-bg);
+  color: var(--sample-editor-text);
+}
+
+.codePane {
+  margin: 0;
+  padding: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre;
+  overflow: auto;
+  user-select: none;
+  background: transparent;
+  color: inherit;
+}
+
+.codePane code {
+  user-select: none;
+}
+
 .status {
   margin: 8px 0 0;
   font-size: 13px;
-  color: GrayText;
+  color: var(--muted);
   min-height: 18px;
 }
 
-.editors {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 8px;
+.myEditors {
   margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-.editor {
-  border: 1px solid ButtonBorder;
+.myPane {
+  padding: 10px;
+  background: var(--surface);
 }
 
-.label {
-  padding: 6px 8px;
-  background: ButtonFace;
-  border-bottom: 1px solid ButtonBorder;
-  font-size: 12px;
+.jsFiles {
+  padding: 6px;
+  margin: 0 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-2);
+  flex-wrap: wrap;
+}
+
+.myPane textarea {
+  min-height: 220px;
 }
 
 textarea {
   width: 100%;
   height: 180px;
-  border: 0;
-  padding: 8px;
+  border: 1px solid var(--code-border);
+  background: var(--code-bg);
+  color: var(--code-text);
+  padding: 12px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 12px;
-  line-height: 1.4;
+  font-size: 13px;
+  line-height: 1.6;
   box-sizing: border-box;
   resize: vertical;
+  border-radius: 12px;
+}
+
+.myPane textarea.autoGrow {
+  resize: none;
+  overflow: hidden;
+}
+
+/* CodeMirror (editor) */
+.CodeMirror {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  border: 1px solid var(--code-border);
+  border-radius: 12px;
+}
+
+/* Auto height like textarea autoGrow */
+.CodeMirror {
+  height: auto;
+}
+
+.CodeMirror-scroll {
+  min-height: 220px;
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+
+.btn:focus-visible,
+.tab:focus-visible,
+.select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+textarea::selection,
+.codePane ::selection {
+  background: color-mix(in srgb, var(--accent) 35%, transparent);
 }

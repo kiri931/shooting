@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Playground</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.css" />
+  <link id="cmThemeLink" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/theme/eclipse.min.css" />
 </head>
 
 <body>
@@ -16,9 +18,22 @@
       <p class="sub" id="pageSub">左: サンプル / 右: 自分のコード</p>
     </div>
     <div class="header-actions">
+      <span id="saveInfo" class="saveInfo">自動保存: -</span>
+      <button id="exportBtn" class="btn" type="button">エクスポート</button>
+      <label class="btn" for="importFile">インポート</label>
+      <input id="importFile" class="fileInput" type="file" accept="application/json,.json" />
+      <button id="resetStepBtn" class="btn" type="button">このStepをリセット</button>
       <button id="runBtn" class="btn">実行</button>
     </div>
   </header>
+
+  <section id="guide" class="guide" hidden>
+    <div class="guide-head">
+      <h2 class="h2" id="guideTitle">このStepのガイド</h2>
+      <a id="guideOpen" class="guide-link" target="_blank" rel="noreferrer">guide.md を別タブで開く</a>
+    </div>
+    <div id="guideBody" class="guide-body"></div>
+  </section>
 
   <main class="workspace">
     <section class="col">
@@ -29,6 +44,22 @@
       <div class="links">
         <a id="sampleOpen" target="_blank" rel="noreferrer">サンプルを別タブで開く</a>
       </div>
+
+      <div class="sampleCode">
+        <div class="tabs" role="tablist" aria-label="サンプルのソース">
+          <button class="tab" type="button" role="tab" aria-selected="false" data-tab="html">HTML</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-tab="css">CSS</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-tab="js">JavaScript</button>
+        </div>
+
+        <div id="sampleCodeBody" class="codeBody" hidden>
+          <div id="sampleJsFiles" class="tabs jsFiles" role="tablist" aria-label="サンプルJavaScriptファイル" hidden></div>
+          <pre class="codePane" data-pane="html"><code id="sampleHtml" class="language-html"></code></pre>
+          <pre class="codePane" data-pane="css" hidden><code id="sampleCss" class="language-css"></code></pre>
+          <pre class="codePane" data-pane="js" hidden><code id="sampleJs" class="language-javascript"></code></pre>
+        </div>
+      </div>
+
     </section>
 
     <section class="col">
@@ -36,25 +67,62 @@
       <div class="iframeWrap">
         <iframe id="outFrame" title="output"></iframe>
       </div>
+
       <div id="status" class="status"></div>
 
-      <div class="editors">
-        <div class="editor">
-          <div class="label">HTML</div>
+      <div class="myEditors">
+        <div class="tabs myTabs" role="tablist" aria-label="自分のコード">
+          <button class="tab" type="button" role="tab" aria-selected="false" data-my-tab="html">HTML</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-my-tab="css">CSS</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-my-tab="js">JavaScript</button>
+
+          <div class="sideControls" aria-label="表示とエディタ設定">
+            <div class="controlGroup">
+              <label class="themeLabel" for="themeSelect">表示</label>
+              <select id="themeSelect" class="select" aria-label="テーマ">
+                <option value="auto">自動</option>
+                <option value="light">ライト</option>
+                <option value="dark">ダーク</option>
+              </select>
+            </div>
+
+            <div class="controlGroup">
+              <label class="themeLabel" for="cmThemeSelect">エディタ</label>
+              <select id="cmThemeSelect" class="select" aria-label="エディタテーマ">
+                <option value="auto">自動</option>
+                <option value="eclipse">Eclipse（明）</option>
+                <option value="idea">IDEA（明）</option>
+                <option value="neo">Neo（明）</option>
+                <option value="material-darker">Material Darker（暗）</option>
+                <option value="darcula">Darcula（暗）</option>
+                <option value="dracula">Dracula（暗）</option>
+                <option value="monokai">Monokai（暗）</option>
+              </select>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="myPane" data-my-pane="html" hidden>
           <textarea id="htmlText" spellcheck="false"></textarea>
         </div>
-        <div class="editor">
-          <div class="label">CSS</div>
+        <div class="myPane" data-my-pane="css" hidden>
           <textarea id="cssText" spellcheck="false"></textarea>
         </div>
-        <div class="editor">
-          <div class="label">JavaScript</div>
+        <div class="myPane" data-my-pane="js" hidden>
+          <div id="jsFiles" class="tabs jsFiles" role="tablist" aria-label="JavaScriptファイル" hidden></div>
           <textarea id="jsText" spellcheck="false"></textarea>
         </div>
       </div>
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/xml/xml.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/css/css.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+  <script src="theme.js"></script>
   <script src="playground.js"></script>
 </body>
 
