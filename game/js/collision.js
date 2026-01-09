@@ -1,56 +1,39 @@
 import { player } from "./player.js";
 import { enemies } from "./enemies.js";
-import { bullets } from "./main.js";
+import { bullets } from "./bullets.js";
+import { detectBulletEnemyHits, detectPlayerEnemyHits } from "./collisionDetect.js";
+import { applyBulletEnemyHits, applyPlayerEnemyHits } from "./collisionApply.js";
+
+// collision.js は「当たり判定処理の司令塔」です。
+//
+// ここでは “当たっているかどうかを調べる” ことと、
+// “当たった結果を反映する（消す・スコア加算・Life減らす）” ことを分けています。
+//
+// - 調べるだけ：collisionDetect.js
+// - 反映するだけ：collisionApply.js
+//
+// こうしておくと、処理の見通しがよくなり、バグも追いやすくなります。
 
 export function handleCollisions() {
-  // 弾 × 敵
-  for (let ei = enemies.length - 1; ei >= 0; ei--) {
-    const e = enemies[ei];
-    let hit = false;
+  // 1) 弾と敵が「重なっている」組み合わせを集める（まだ消したりはしない）
+  const bulletEnemyHits = detectBulletEnemyHits({ bullets, enemies });
 
-    for (let bi = bullets.length - 1; bi >= 0; bi--) {
-      const b = bullets[bi];
-      if (rectsIntersect(
-        { x: b.x, y: b.y, width: b.width, height: b.height },
-        { x: e.x, y: e.y, width: e.width, height: e.height }
-      )) {
-        // 命中：弾と敵を削除、スコア加算
-        bullets.splice(bi, 1);
-        enemies.splice(ei, 1);
-        player.score += 1;
-        console.log("Score:", player.score);
-        hit = true;
-        break; // この敵は消えたので次の敵へ
-      }
-    }
+  // 2) 上で見つけたヒット情報を使って、弾と敵を消してスコアを加算する
+  applyBulletEnemyHits({ bullets, enemies, hits: bulletEnemyHits });
 
-    if (hit) continue;
-  }
+  // 3) 自機と敵が「重なっている」かを調べる（当たった敵の番号を返す）
+  const playerEnemyHits = detectPlayerEnemyHits({ player, enemies });
 
-  // 自機 × 敵（ゲームオーバー）
-  for (let ei = enemies.length - 1; ei >= 0; ei--) {
-    const e = enemies[ei];
-    if (rectsIntersect(
-      { x: player.x, y: player.y, width: player.width, height: player.height },
-      { x: e.x, y: e.y, width: e.width, height: e.height }
-    )) {
-      player.life -= 1;
-      if(player.life <= 0) {
-        document.location.reload();
-      }
-      enemies.splice(ei, 1);
-      console.log("Player Life:", player.life);
-    //   isGameOver = true;
-      break;
-    }
+  // 4) 当たっていたら敵を消して Life を減らす（Life が 0 ならリロード）
+  return applyPlayerEnemyHits({ enemies, enemyIndices: playerEnemyHits });
+}
+
+// main.js からは collisionSystem.update() を呼ぶだけにしています。
+// （他の BulletSystem / EnemySystem と形を揃えるため）
+export class CollisionSystem {
+  update() {
+    return handleCollisions();
   }
 }
 
-function rectsIntersect(a, b) {
-  return (
-    a.x < b.x + b.width &&
-    a.x + a.width > b.x &&
-    a.y < b.y + b.height &&
-    a.y + a.height > b.y
-  );
-} 
+export const collisionSystem = new CollisionSystem();
