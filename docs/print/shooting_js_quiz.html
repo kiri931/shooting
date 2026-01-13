@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>JavaScript構造クイズ - シューティングゲーム編（完全版）</title>
+  <title>JavaScript構造クイズ - Step7（弾を複数：配列）</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,7 +14,7 @@
   </header>
 
   <main>
-    <h1>JavaScript構造クイズ（シューティングゲーム）</h1>
+    <h1>JavaScript構造クイズ（Step7: 弾を複数／配列）</h1>
 
     <ol>
       <li>
@@ -58,22 +58,22 @@
       </li>
 
       <li>
-        <p><strong>Q5.</strong> プレイヤーの色を青に変更したい。どうすればよいですか？</p>
+        <p><strong>Q5.</strong> 画像がまだ読み込めていないとき、自機を黄色の四角で描く処理はどれですか？</p>
         <ul>
-          <li>① <code>player.color = "blue";</code> に書き換える</li>
-          <li>② <code>player.width = "blue";</code> に書き換える</li>
-          <li>③ <code>canvas.color = "blue";</code> に書き換える</li>
-          <li>④ <code>ctx.fillStyle = "blue";</code> を削除する</li>
+          <li>① <code>ctx.drawImage(playerImage, ...)</code></li>
+          <li>② <code>ctx.fillStyle = "yellow"; ctx.fillRect(...)</code></li>
+          <li>③ <code>playerImage.src = "yellow"</code></li>
+          <li>④ <code>ctx.arc(...)</code></li>
         </ul>
       </li>
 
       <li>
-        <p><strong>Q6.</strong> プレイヤーをもっと中央に配置したい。どの部分を変更しますか？</p>
+        <p><strong>Q6.</strong> 自機の初期位置を中央にするための式はどれですか？</p>
         <ul>
-          <li>① <code>y: canvas.height - 60</code> の「60」を大きくする</li>
-          <li>② <code>x: canvas.width / 2 - 15</code> の「-15」を調整する</li>
-          <li>③ <code>width: 30</code> を0にする</li>
-          <li>④ <code>color: "yellow"</code> を削除する</li>
+          <li>① <code>x: 0</code></li>
+          <li>② <code>x: canvas.width / 2 - 30 / 2</code></li>
+          <li>③ <code>x: canvas.width</code></li>
+          <li>④ <code>x: -30</code></li>
         </ul>
       </li>
 
@@ -118,22 +118,22 @@
       </li>
 
       <li>
-        <p><strong>Q11.</strong> プレイヤーを上下にも動かせるようにするにはどうすればよいですか？</p>
+        <p><strong>Q11.</strong> 押しっぱなしで移動させるために、<code>keydown</code> だけでなく <code>keyup</code> も使う主な理由は？</p>
         <ul>
-          <li>① <code>ArrowUp</code> と <code>ArrowDown</code> のキー処理を追加する</li>
-          <li>② <code>BULLET_SPEED</code> を変える</li>
-          <li>③ <code>ctx.fillStyle</code> を削除する</li>
-          <li>④ <code>canvas.height</code> を小さくする</li>
+          <li>① キーを離した瞬間に入力状態をfalseへ戻すため</li>
+          <li>② requestAnimationFrameを止めるため</li>
+          <li>③ 画像を読み込むため</li>
+          <li>④ canvasのサイズを変えるため</li>
         </ul>
       </li>
 
       <li>
-        <p><strong>Q12.</strong> 上下の動きを追加するうえで気を付けることとして最も適切なのは？</p>
+        <p><strong>Q12.</strong> 自機が画面外に出ないようにする処理として最も適切なのは？</p>
         <ul>
-          <li>① マージン（上下の端）を決めて画面外に出ないようにする</li>
-          <li>② 弾の速度を0にする</li>
-          <li>③ 横方向の移動を消す</li>
-          <li>④ <code>update()</code> 関数を削除する</li>
+          <li>① <code>player.x</code> を 0〜<code>canvas.width - player.width</code> に収める</li>
+          <li>② <code>BULLET_SPEED</code> を0にする</li>
+          <li>③ <code>draw()</code> を削除する</li>
+          <li>④ 何もしない</li>
         </ul>
       </li>
 
@@ -180,7 +180,7 @@
       <li>
         <p><strong>Q17.</strong> <code>update()</code> 関数内で <code>bullets.splice(i,1)</code> によって弾を削除しています。どのようなときに削除しているか？</p>
         <ul>
-          <li>① 弾が画面の上端（y座標0より上）に出たとき</li>
+          <li>① 弾の下端が画面の上端（y=0）より上に出たとき（<code>b.y + b.size &lt; 0</code>）</li>
           <li>② 弾が敵に当たったとき</li>
           <li>③ 弾が右端に到達したとき</li>
           <li>④ 弾がplayerと重なったとき</li>
@@ -195,7 +195,7 @@
         <li>Q2 → ③</li>
         <li>Q3 → ①</li>
         <li>Q4 → ①</li>
-        <li>Q5 → ①</li>
+        <li>Q5 → ②</li>
         <li>Q6 → ②</li>
         <li>Q7 → ①</li>
         <li>Q8 → ①</li>

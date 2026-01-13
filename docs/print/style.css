@@ -3,38 +3,41 @@
    - 既定: プレビュー/印刷向けの白黒
    - body.mode-edit で VSCode風（ダーク）に切替
    ========================================================= */
+@import url("../../shared/design-system.css");
+
 :root {
-  --bg: #fff;
-  --fg: #222;
-  --border: #ccc;
-  --code-bg: #f8f8f8;
-  --code-fg: #000;
-  --panel-bg: #fafafa;
-  --btn-bg: #f4f4f4;
-  --btn-fg: #000;
-  --btn-hover: #e0e0e0;
+  /* print/ はページ内で独自トークンを使っているので、共通トークンから派生させる */
+  --bg: var(--color-bg);
+  --fg: var(--color-text);
+  --border: var(--color-border);
+  --code-bg: var(--color-surface-2);
+  --code-fg: var(--color-text);
+  --panel-bg: var(--color-surface);
+  --btn-bg: var(--color-surface-2);
+  --btn-fg: var(--color-text);
+  --btn-hover: var(--color-neutral-solid-gray-100);
 }
 
 /* VSCode風（編集モード） */
 body.mode-edit {
-  --bg: #1e1e1e;
-  --fg: #d4d4d4;
-  --border: #3c3c3c;
-  --code-bg: #252526;
-  --code-fg: #eaeaea;
-  --panel-bg: #2b2b2b;
-  --btn-bg: #2d2d30;
-  --btn-fg: #eaeaea;
-  --btn-hover: #3a3a3d;
+  --bg: #1a1a1a;
+  --fg: #e6e6e6;
+  --border: #4d4d4d;
+  --code-bg: #1e1e1e;
+  --code-fg: #e6e6e6;
+  --panel-bg: #252526;
+  --btn-bg: #2d2d2d;
+  --btn-fg: #e6e6e6;
+  --btn-hover: #333333;
 }
 
 /* =========================================================
    ベース
    ========================================================= */
 body {
-  font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
-  margin: 40px;
-  line-height: 1.6;
+  font-family: var(--font-family-sans);
+  margin: calc(40 / 16 * 1rem);
+  line-height: 1.7;
   color: var(--fg);
   background: var(--bg);
 }
@@ -83,8 +86,8 @@ span.code-sample {
 pre {
   background: var(--code-bg);
   border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 0.5em 1em;
+  border-radius: var(--radius-8);
+  padding: var(--space-12) var(--space-16);
   white-space: pre-wrap;
   word-wrap: break-word;
 }
@@ -177,11 +180,11 @@ header h1 {
 #toggle-preview {
   display: inline-block;
   margin: 1em 0.5em 2em 0;
-  padding: 0.4em 1.2em;
+  padding: calc(8 / 16 * 1rem) calc(12 / 16 * 1rem);
   font-size: 1em;
   font-family: inherit;
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: calc(9999 / 16 * 1rem);
   background: var(--btn-bg);
   color: var(--btn-fg);
   cursor: pointer;
@@ -224,4 +227,105 @@ header h1 {
 .fill-blank+.code-sample {
   margin-left: 0.2em;
   /* ちょっと隙間をあける */
+}
+
+/* =========================================================
+   print2統合（テスト/解説ページ向け）
+   - body.print2 を付けたページだけに適用
+   ========================================================= */
+body.print2 h1 {
+  margin-bottom: 0;
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+body.print2 p,
+body.print2 li {
+  line-height: 1.4;
+}
+
+/* 配点表示の行 */
+body.print2 .title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+body.print2 .your-point {
+  display: flex;
+  align-items: center;
+  gap: 2.5em;
+  font-size: 1em;
+  color: var(--fg);
+}
+
+body.print2 .your-point .label {
+  font-weight: bold;
+}
+
+body.print2 .your-point .total {
+  opacity: 0.8;
+}
+
+/* テーブル（答案欄など） */
+body.print2 table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+body.print2 td {
+  border: 1px solid var(--border);
+  height: 50px;
+  text-align: left;
+  vertical-align: middle;
+  padding-left: 8px;
+  font-size: 16px;
+}
+
+body.print2 .large-table td {
+  height: 100px;
+}
+
+/* 親OL（第1階層）: 1 / 2 / 3... を自前で付ける */
+body.print2 ol.level1 {
+  counter-reset: section;
+  padding-left: 0;
+}
+
+body.print2 ol.level1 > li {
+  counter-increment: section;
+  list-style: none;
+  position: relative;
+  padding-left: 2em;
+}
+
+body.print2 ol.level1 > li::before {
+  content: counter(section) " ";
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+  top: 0.2em;
+}
+
+/* 子OL（第2階層）: 1.1 / 1.2... */
+body.print2 ol.level2 {
+  counter-reset: subsection;
+  list-style-type: none;
+  padding-left: 30px;
+}
+
+body.print2 ol.level2 > li {
+  counter-increment: subsection;
+  margin: 4px 0;
+}
+
+body.print2 ol.level2 > li::before {
+  content: counter(section) "." counter(subsection) " ";
+}
+
+@media print {
+  body.print2 td {
+    border-color: #000;
+  }
 }

@@ -27,9 +27,16 @@ function stripLiveServerInjection(text) {
   // Live Server が .md を HTML 扱いして末尾に注入することがあるため、
   // 目印以降を切り落とす。
   const s = String(text);
-  const idx = s.indexOf("<!-- Code injected by live-server -->");
-  if (idx >= 0) return s.slice(0, idx).trimEnd();
-  return s.trimEnd();
+
+  // 以前は「目印以降を全部切り落とす」実装だったが、Live Server の注入が
+  // </body> より前に入るケースでは、閉じタグまで消えてしまう。
+  // ここでは「目印コメント + 直後の注入スクリプト」だけを除去して、残りは保持する。
+  const marker = "<!-- Code injected by live-server -->";
+  if (!s.includes(marker)) return s.trimEnd();
+
+  // marker 以降の最初の </script> までを削除（注入スクリプトを想定）
+  const out = s.replace(/<!-- Code injected by live-server -->[\s\S]*?<\/script>\s*/g, "");
+  return out.trimEnd();
 }
 
 function renderInlineMd(text) {
@@ -444,45 +451,6 @@ function highlightAllCodeWithin(root) {
   }
 }
 
-function setupSampleTabs({ onChange } = {}) {
-  // サンプルのソース表示（タブ式）
-  const sampleHtmlEl = document.getElementById("sampleHtml");
-  const sampleCssEl = document.getElementById("sampleCss");
-  const sampleJsEl = document.getElementById("sampleJs");
-  const sampleCodeBody = document.getElementById("sampleCodeBody");
-  const sampleCodeWrap = document.querySelector(".sampleCode");
-  const sampleJsFilesBar = document.getElementById("sampleJsFiles");
-  const tabButtons = sampleCodeWrap
-    ? Array.from(sampleCodeWrap.querySelectorAll(".tab[data-tab]"))
-    : [];
-
-  const setActiveTab = (name) => {
-    for (const btn of tabButtons) {
-      const active = btn.dataset.tab === name;
-      btn.setAttribute("aria-selected", active ? "true" : "false");
-    }
-    const panes = sampleCodeWrap
-      ? Array.from(sampleCodeWrap.querySelectorAll(".codePane[data-pane]"))
-      : [];
-    for (const pane of panes) {
-      pane.hidden = pane.dataset.pane !== name;
-    }
-    if (sampleCodeBody) sampleCodeBody.hidden = false;
-
-    if (sampleJsFilesBar) {
-      if (name !== "js") sampleJsFilesBar.hidden = true;
-    }
-
-    if (typeof onChange === "function") onChange(name);
-  };
-
-  for (const btn of tabButtons) {
-    btn.addEventListener("click", () => setActiveTab(btn.dataset.tab));
-  }
-
-  return { sampleHtmlEl, sampleCssEl, sampleJsEl, sampleJsFilesBar, setActiveTab };
-}
-
 function setupMyTabs() {
   // 右側（自分の実行）エディタのタブ
   // opts.onChange(tabName) があれば、タブ切替後に呼ぶ
@@ -605,9 +573,13 @@ function syncSampleCodeColorsFromEditor() {
   const sampleWrap = document.querySelector(".sampleCode");
   if (!sampleWrap) return;
 
-  const cm = document.querySelector(".myPane[data-my-pane='js'] .CodeMirror") ||
+  // hidden な pane だとテーマ適用が未反映に見えることがあるので、まず表示中paneから拾う
+  const cm =
+    document.querySelector(".myPane:not([hidden]) .CodeMirror") ||
+    document.querySelector(".myPane[data-my-pane='js'] .CodeMirror") ||
     document.querySelector(".myPane[data-my-pane='html'] .CodeMirror") ||
-    document.querySelector(".myPane[data-my-pane='css'] .CodeMirror");
+    document.querySelector(".myPane[data-my-pane='css'] .CodeMirror") ||
+    document.querySelector(".CodeMirror");
   if (!cm) return;
 
   try {
@@ -725,6 +697,106 @@ function setupCodeMirrorEditors({ htmlText, cssText, jsText }) {
   return { kind: "codemirror", getValues, getValue, setValues, setValue, onChange, refresh, setThemeName };
 }
 
+function setupSampleViewers({ sampleHtmlEl, sampleCssEl, sampleJsEl, themeName }) {
+  // 左側（サンプル）のソース表示を、可能なら CodeMirror の readOnly で表示する。
+  // これにより、右側エディタと同じテーマ配色（シンタックス含む）にできる。
+  const hasCm = typeof window.CodeMirror === "function";
+
+  const textFallback = {
+    kind: "text",
+    setValue: (which, value) => {
+      const v = String(value ?? "").trimEnd();
+      if (which === "html" && sampleHtmlEl) sampleHtmlEl.textContent = v;
+      if (which === "css" && sampleCssEl) sampleCssEl.textContent = v;
+      if (which === "js" && sampleJsEl) sampleJsEl.textContent = v;
+    },
+    setThemeName: () => {},
+    refresh: () => {},
+  };
+
+  if (!hasCm) return textFallback;
+
+  const baseOptions = {
+    lineNumbers: true,
+    tabSize: 2,
+    indentUnit: 2,
+    indentWithTabs: false,
+    lineWrapping: true,
+    viewportMargin: Infinity,
+    readOnly: "nocursor",
+    theme: themeName || resolveCodeMirrorTheme(readCodeMirrorThemePref(), getEffectiveTheme()),
+  };
+
+  const createViewer = (codeEl, mode) => {
+    if (!codeEl) return null;
+    const pre = codeEl.closest("pre");
+    if (!pre) return null;
+    const host = document.createElement("div");
+    host.className = "sampleCmHost";
+    pre.appendChild(host);
+    // plain-text fallbackは隠す（CodeMirrorが描画される）
+    codeEl.hidden = true;
+    try {
+      return window.CodeMirror(host, { ...baseOptions, mode, value: "" });
+    } catch {
+      codeEl.hidden = false;
+      host.remove();
+      return null;
+    }
+  };
+
+  const htmlCm = createViewer(sampleHtmlEl, "htmlmixed");
+  const cssCm = createViewer(sampleCssEl, "css");
+  const jsCm = createViewer(sampleJsEl, "javascript");
+
+  if (!htmlCm && !cssCm && !jsCm) return textFallback;
+
+  const setThemeName = (name) => {
+    const n = String(name || "");
+    try {
+      if (htmlCm) htmlCm.setOption("theme", n);
+      if (cssCm) cssCm.setOption("theme", n);
+      if (jsCm) jsCm.setOption("theme", n);
+    } catch {
+      // ignore
+    }
+  };
+
+  const setValue = (which, value) => {
+    const v = String(value ?? "").trimEnd();
+    try {
+      if (which === "html" && htmlCm) htmlCm.setValue(v);
+      else if (which === "css" && cssCm) cssCm.setValue(v);
+      else if (which === "js" && jsCm) jsCm.setValue(v);
+      else textFallback.setValue(which, v);
+    } catch {
+      textFallback.setValue(which, v);
+    }
+  };
+
+  const refresh = (which) => {
+    const doOne = (cm) => {
+      try {
+        cm.refresh();
+      } catch {
+        // ignore
+      }
+    };
+    if (which === "html" && htmlCm) return setTimeout(() => doOne(htmlCm), 0);
+    if (which === "css" && cssCm) return setTimeout(() => doOne(cssCm), 0);
+    if (which === "js" && jsCm) return setTimeout(() => doOne(jsCm), 0);
+    setTimeout(() => {
+      if (htmlCm) doOne(htmlCm);
+      if (cssCm) doOne(cssCm);
+      if (jsCm) doOne(jsCm);
+    }, 0);
+  };
+
+  // 初回
+  refresh();
+  return { kind: "codemirror", setValue, setThemeName, refresh };
+}
+
 function parseCombinedJsToFileMap(jsText, manifestJs) {
   const list = Array.isArray(manifestJs) ? manifestJs.slice() : [];
   const normalizedList = list.map((s) => String(s || "").trim()).filter(Boolean);
@@ -803,11 +875,13 @@ async function setupGuide(step) {
     const guideBody = document.getElementById("guideBody");
     const guideOpen = document.getElementById("guideOpen");
 
+    const commonGuide = `# Playgroundの使い方\n\n- 右側（自分のコード）のHTML/CSS/JavaScriptを編集して、上の「実行」を押すと右のプレビューに反映されます。\n- 編集内容は自動保存されます（上部の「自動保存:」に保存時刻が出ます）。\n- 「エクスポート」でJSONとして保存し、「インポート」で別PCや別ブラウザに持っていけます。\n- 「このStepをリセット」は、このStepの保存データ（自分のコード）だけを初期状態に戻します。\n\n## 画像のパス\n\n- 画像は主に \`learning/image/\` を参照します。例: \`../image/player.png\`\n- パスが合わないときは、まず画像ファイルの場所と拡張子を確認してください。\n\n## JavaScriptをファイル分けしたいとき（Step9以降）\n\n- 複数ファイル形式にしたい場合は、JS欄に次のような区切りを入れられます。\n\n\`\`\`js\n// --- file: main.js ---\n// ここにmainの内容\n\n// --- file: player.js ---\n// ここにplayerの内容\n\`\`\`\n\n- どのファイル名にするかは、各Stepのサンプル側の構成に合わせてください。\n`;
+
     if (guide) {
       guideWrap.hidden = false;
       guideTitle.textContent = `ガイド: ${step}`;
       const cleaned = stripLiveServerInjection(guide);
-      guideBody.innerHTML = renderGuideMarkdown(cleaned);
+      guideBody.innerHTML = renderGuideMarkdown(`${commonGuide}\n\n# このStepのガイド\n\n${cleaned}`);
       highlightAllCodeWithin(guideBody);
       guideOpen.href = guidePath;
     } else {
@@ -1054,7 +1128,7 @@ async function main() {
   let sampleJsManifestList = null;
   let sampleJsFileMap = null;
   let sampleJsActiveFile = "main.js";
-  const renderSampleJsFileButtons = (bar, sampleJsElRef) => {
+  const renderSampleJsFileButtons = (bar, setJsValue) => {
     if (!bar) return;
     bar.innerHTML = "";
     if (!sampleJsManifestList || sampleJsManifestList.length === 0) {
@@ -1074,10 +1148,10 @@ async function main() {
       btn.addEventListener("click", () => {
         if (!sampleJsFileMap) return;
         sampleJsActiveFile = name;
-        if (sampleJsElRef) {
-          sampleJsElRef.textContent = String(sampleJsFileMap.get(sampleJsActiveFile) ?? "").trimEnd();
+        if (typeof setJsValue === "function") {
+          setJsValue(String(sampleJsFileMap.get(sampleJsActiveFile) ?? "").trimEnd());
         }
-        renderSampleJsFileButtons(bar, sampleJsElRef);
+        renderSampleJsFileButtons(bar, setJsValue);
       });
       bar.appendChild(btn);
     }
@@ -1088,15 +1162,27 @@ async function main() {
       if (!sampleJsFilesBar) return;
       if (name !== "js") {
         sampleJsFilesBar.hidden = true;
+        if (sampleViewers && typeof sampleViewers.refresh === "function") sampleViewers.refresh(name);
         return;
       }
       if (!sampleJsManifestList || sampleJsManifestList.length === 0) {
         sampleJsFilesBar.hidden = true;
+        if (sampleViewers && typeof sampleViewers.refresh === "function") sampleViewers.refresh(name);
         return;
       }
       sampleJsFilesBar.hidden = false;
-      renderSampleJsFileButtons(sampleJsFilesBar, sampleJsEl);
+      renderSampleJsFileButtons(sampleJsFilesBar, (v) => sampleViewers.setValue("js", v));
+      if (sampleViewers && typeof sampleViewers.refresh === "function") sampleViewers.refresh(name);
     },
+  });
+
+  // サンプルビューア（左側）も CodeMirror テーマに合わせる
+  const initialSampleThemeName = resolveCodeMirrorTheme(readCodeMirrorThemePref(), getEffectiveTheme());
+  const sampleViewers = setupSampleViewers({
+    sampleHtmlEl,
+    sampleCssEl,
+    sampleJsEl,
+    themeName: initialSampleThemeName,
   });
 
   // 初期はHTMLタブを表示
@@ -1192,12 +1278,27 @@ async function main() {
 
   const editors = setupCodeMirrorEditors({ htmlText, cssText, jsText });
 
+  // CodeMirror テーマCSSの読み込み完了後に、サンプル表示の配色を同期する
+  const cmThemeLink = document.getElementById("cmThemeLink");
+  if (cmThemeLink) {
+    cmThemeLink.addEventListener("load", () => {
+      // 読み込み直後はスタイル計算が落ち着かないことがあるため少し遅らせる
+      setTimeout(syncSampleCodeColorsFromEditor, 0);
+      setTimeout(syncSampleCodeColorsFromEditor, 50);
+      setTimeout(syncSampleCodeColorsFromEditor, 150);
+    });
+  }
+
   // CodeMirror テーマ（公開テーマから選択）
   setupCodeMirrorThemePicker(editors, {
-    onApplied: () => {
+    onApplied: (_pref, themeName) => {
       // テーマCSSの適用が落ち着いてから同期
       setTimeout(syncSampleCodeColorsFromEditor, 0);
       setTimeout(syncSampleCodeColorsFromEditor, 50);
+      if (sampleViewers && typeof sampleViewers.setThemeName === "function") {
+        sampleViewers.setThemeName(themeName);
+        sampleViewers.refresh();
+      }
     },
   });
 
@@ -1210,6 +1311,8 @@ async function main() {
     btn.addEventListener("click", () => {
       const name = btn.dataset.myTab;
       if (editors && typeof editors.refresh === "function") editors.refresh(name);
+      // 表示paneが切り替わった後に同期（テーマがpaneごとに見え方が変わるのを防ぐ）
+      setTimeout(syncSampleCodeColorsFromEditor, 0);
     });
   }
 
@@ -1230,25 +1333,28 @@ async function main() {
     const { html, css, js, manifestJs } = await loadStepSources(step);
 
     // 左側（サンプル）にはソースを表示する（Live Server 注入は除去）
-    if (sampleHtmlEl) sampleHtmlEl.textContent = stripLiveServerInjection(html);
-    if (sampleCssEl) sampleCssEl.textContent = String(css ?? "").trimEnd();
+    sampleViewers.setValue("html", stripLiveServerInjection(html));
+    sampleViewers.setValue("css", String(css ?? "").trimEnd());
 
     if (Array.isArray(manifestJs) && manifestJs.length > 0) {
       sampleJsManifestList = manifestJs.map((s) => String(s || "").trim()).filter(Boolean);
       const parsed = parseCombinedJsToFileMap(js, sampleJsManifestList);
       sampleJsFileMap = parsed.map;
       sampleJsActiveFile = sampleJsManifestList.includes("main.js") ? "main.js" : parsed.fallbackName;
-      if (sampleJsEl) sampleJsEl.textContent = String(sampleJsFileMap.get(sampleJsActiveFile) ?? "").trimEnd();
+      sampleViewers.setValue("js", String(sampleJsFileMap.get(sampleJsActiveFile) ?? "").trimEnd());
       if (sampleJsFilesBar) {
         // JSタブを開いた時に出るが、開いている場合に備えて生成しておく
-        renderSampleJsFileButtons(sampleJsFilesBar, sampleJsEl);
+        renderSampleJsFileButtons(sampleJsFilesBar, (v) => sampleViewers.setValue("js", v));
       }
     } else {
       sampleJsManifestList = null;
       sampleJsFileMap = null;
       if (sampleJsFilesBar) sampleJsFilesBar.hidden = true;
-      if (sampleJsEl) sampleJsEl.textContent = String(js ?? "").trimEnd();
+      sampleViewers.setValue("js", String(js ?? "").trimEnd());
     }
+
+    // 初回は見えているタブの viewer を refresh
+    if (sampleViewers && typeof sampleViewers.refresh === "function") sampleViewers.refresh();
 
     // Step9+ の manifest を保持
     jsManifestList = Array.isArray(manifestJs) ? manifestJs.map((s) => String(s || "").trim()).filter(Boolean) : null;

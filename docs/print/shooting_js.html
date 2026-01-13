@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>情報プログレス 動作用Javascript</title>
+  <title>Step7: 弾を複数（配列） - JavaScriptプリント</title>
   <link rel="stylesheet" href="style.css">
 
 </head>
@@ -19,75 +19,118 @@
   </header>
 
   <main>
-    <h1>情プロ シューティングゲーム用Javascript No.2</h1>
+    <h1>Step7: 弾を複数（配列） - JavaScript</h1>
     <!-- コード全文（変更なし） -->
     <pre><code class="code-sample">
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+// 自機
 const player = {
-    x: canvas.width / 2 - 15,
-    y: canvas.height - 60,
-    width: 30,
-    height: 30,
-    color: "yellow",
-    life: 3,
+  width: 30,
+  height: 30,
+  x: canvas.width / 2 - 30 / 2,
+  y: canvas.height - 60,
+  speed: 5,
 };
 
-const bullets = [];
-const BULLET_SPEED = -5;
+// 入力（押しっぱなし対応）
+const input = {
+  left: false,
+  right: false,
+};
 
-function tryShoot(){
-    bullets.push({
-        x: player.x,
-        y: player.y,
-        width: 10,
-        height: 10,
-        vy: BULLET_SPEED,
-    })
-}
+// 弾（複数を配列で管理する）
+const bullets = [];
+
+const BULLET_SIZE = 10;
+const BULLET_SPEED = -8;
+
+const mapImage = new Image();
+mapImage.src = "../image/map.png";
+
+const playerImage = new Image();
+playerImage.src = "../image/player.png";
 
 window.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft") {
-        if (player.x > 10) {
-            player.x -= 10;
-        }
-    } else if (e.key === "ArrowRight") {
-        if (player.x < canvas.width - player.width - 10){
-        player.x += 10;
-    }
-    } else if (e.code === "Space") {
-     tryShoot();
-    }
+  if (e.key === "ArrowLeft") input.left = true;
+  if (e.key === "ArrowRight") input.right = true;
+
+  // Space を押したら弾を配列に追加する（何発でもOK）
+  if (e.code === "Space") {
+    bullets.push({
+      size: BULLET_SIZE,
+      x: player.x + player.width / 2 - BULLET_SIZE / 2,
+      y: player.y,
+      vy: BULLET_SPEED,
+    });
+  }
 });
 
-function update(){
-    for (let i = 0; i < bullets.length; i++) {
-        const bullet = bullets[i];
-        bullet.y += bullet.vy;   
-        if (bullet.y < 0) {
-            bullets.splice(i, 1);
-        }
+window.addEventListener("keyup", (e) => {
+  if (e.key === "ArrowLeft") input.left = false;
+  if (e.key === "ArrowRight") input.right = false;
+});
+
+function update() {
+  // 自機の移動
+  if (input.left) player.x -= player.speed;
+  if (input.right) player.x += player.speed;
+
+  if (player.x < 0) player.x = 0;
+  if (player.x > canvas.width - player.width) {
+    player.x = canvas.width - player.width;
+  }
+
+  // 弾の移動（配列を後ろから回すと削除しやすい）
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    const b = bullets[i];
+    b.y += b.vy;
+
+    // 画面の外に出た弾は消す
+    if (b.y + b.size < 0) {
+      bullets.splice(i, 1);
     }
+  }
 }
 
-function draw(){
+function draw() {
+  // 背景
+  if (mapImage.complete) {
+    ctx.drawImage(mapImage, 0, 0, canvas.width, canvas.height);
+  } else {
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = player.color;
+  }
+
+  // 自機
+  if (playerImage.complete) {
+    ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
+  } else {
+    ctx.fillStyle = "yellow";
     ctx.fillRect(player.x, player.y, player.width, player.height);
-    ctx.fillStyle = "white";
-    for (let i = 0; i < bullets.length; i++) {
-        const bullet = bullets[i];
-        ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
-    }
+  }
+
+  // 弾（白い丸を複数描く）
+  ctx.fillStyle = "white";
+  for (let i = 0; i < bullets.length; i++) {
+    const b = bullets[i];
+    const r = b.size / 2;
+    const cx = b.x + r;
+    const cy = b.y + r;
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
 }
 
 function gameLoop() {
-    update();
-    draw();
-    requestAnimationFrame(gameLoop);
+  update();
+  draw();
+  requestAnimationFrame(gameLoop);
 }
+
 gameLoop();
     </code></pre>
 
@@ -106,9 +149,12 @@ gameLoop();
       </li>
 
       <li>
-        <span class="code-sample">const player = { ... };</span> は、位置や大きさ・色などの情報をひとまとめにした
-        <span class="fill-blank" data-answer="オブジェクト"></span> を作っています。ここでプレイヤーの色は
-        <span class="fill-blank" data-answer="yellow"></span> です。
+        <span class="code-sample">const player = { ... };</span> は、位置や大きさなどの情報をひとまとめにした
+        <span class="fill-blank" data-answer="オブジェクト"></span> を作っています。初期位置のxは
+        <span class="fill-blank" data-answer="canvas.width / 2 - 30 / 2"></span>
+        で、画面の
+        <span class="fill-blank" data-answer="中央"></span>
+        に来るよう計算しています。
       </li>
 
       <li>
@@ -119,33 +165,37 @@ gameLoop();
       </li>
 
       <li>
-        <span class="code-sample">const BULLET_SPEED = -5;</span> の
+        <span class="code-sample">const BULLET_SPEED = -8;</span> の
         <span class="fill-blank" data-answer="BULLET_SPEED"></span> は定数です。負の値なので、弾は
         <span class="fill-blank" data-answer="上"></span> 方向に進みます。
       </li>
 
       <li>
-        <span class="code-sample">tryShoot()</span> は弾を作る
-        <span class="fill-blank" data-answer="関数"></span> です。発射位置はプレイヤーの
-        <span class="fill-blank" data-answer="座標"></span> と同じです。
+        <span class="code-sample">bullets.push({...})</span> は新しい弾を配列に
+        <span class="fill-blank" data-answer="追加"></span>
+        します。弾のxは
+        <span class="fill-blank" data-answer="player.x + player.width / 2 - BULLET_SIZE / 2"></span>
+        で、プレイヤーの中央から出るようにしています。
       </li>
 
       <li>
-        <span class="code-sample">window.addEventListener("keydown", (e) =&gt; {...})</span> はキーボードを受け取る
-        <span class="fill-blank" data-answer="イベントリスナー"></span> です。左矢印のときは
-        <span class="fill-blank" data-answer="左"></span> に、右矢印のときは
-        <span class="fill-blank" data-answer="右"></span> に動きます。
+        <span class="code-sample">keydown</span> / <span class="code-sample">keyup</span> はキーボード入力を受け取る
+        <span class="fill-blank" data-answer="イベントリスナー"></span> です。押している間だけ動けるように、入力状態を
+        <span class="fill-blank" data-answer="input"></span>
+        に保存します。
       </li>
 
       <li>
-        左右移動では、<span class="code-sample">player.x &gt; 10</span> や
-        <span class="code-sample">player.x &lt; canvas.width - player.width - 10</span> の判定で
-        <span class="fill-blank" data-answer="画面端"></span> からはみ出さないようにしています。
+        画面端からはみ出さないように、<span class="code-sample">player.x &lt; 0</span> なら
+        <span class="fill-blank" data-answer="0"></span>
+        に戻し、右端は
+        <span class="fill-blank" data-answer="canvas.width - player.width"></span>
+        を超えないようにしています。
       </li>
 
       <li>
         <span class="code-sample">e.code === "Space"</span> のとき
-        <span class="code-sample">tryShoot()</span> を呼び出して弾を発射します。ここで使われているキー判定のプロパティ名は
+        <span class="code-sample">bullets.push({...})</span> で弾を配列に追加して発射します。ここで使われているキー判定のプロパティ名は
         <span class="fill-blank" data-answer="code"></span> です。
       </li>
 
@@ -154,14 +204,16 @@ gameLoop();
         <span class="fill-blank" data-answer="y"></span> 座標に速度
         <span class="fill-blank" data-answer="vy"></span> を足して進め、画面の外（
         <span class="fill-blank" data-answer="0"></span> より上）に出た弾は
-        <span class="fill-blank" data-answer="配列"></span> から削除します。
+        <span class="fill-blank" data-answer="配列"></span>
+        から削除します。判定は <span class="code-sample">b.y + b.size &lt; 0</span>（弾の下端が上に抜けた）です。
       </li>
 
       <li>
-        <span class="code-sample">draw()</span> は描画します。まず背景を
-        <span class="fill-blank" data-answer="黒"></span> で塗りつぶし、次にプレイヤーを
-        <span class="fill-blank" data-answer="黄色"></span> 色で四角形として描き、最後に弾を
-        <span class="fill-blank" data-answer="白"></span> 色で描いています。
+        <span class="code-sample">draw()</span> は描画します。画像が読み込めていれば
+        <span class="fill-blank" data-answer="drawImage"></span>
+        で描き、読み込み中は背景を黒、自機を黄色の四角で代わりに描きます。弾は白い
+        <span class="fill-blank" data-answer="円"></span>
+        を <span class="code-sample">arc</span> で描きます。
       </li>
 
       <li>
@@ -180,17 +232,12 @@ gameLoop();
           プレイヤーの中央から弾を発射したい。式の空欄を埋めよ：<br>
           <span class="code-sample">player.x + </span><span class="fill-blank"
             data-answer="player.width / 2"></span><span class="code-sample"> - </span><span class="fill-blank"
-            data-answer="bullet.width / 2"></span>
+            data-answer="BULLET_SIZE / 2"></span>
         </li>
 
         <li>
-          次の境界チェックは「画面外に出ない」ためのもの。左端／右端の「<span class="code-sample">10</span>」は何を意味するか。<br>
-          <span class="code-sample">if (player.x &gt; 10) … / if (player.x &lt; canvas.width - player.width - 10)
-            …</span><br>
-          <span class="fill-blank" data-answer="左右の安全マージン（余白）"></span>
-          を一言で答えよ。<br>さらに、マジックナンバーを避けるため定数名を2つ提案せよ：
-          <span class="fill-blank" data-answer="MARGIN_LEFT"></span> /
-          <span class="fill-blank" data-answer="MARGIN_RIGHT"></span>
+          自機が画面外に出ないようにする処理として正しい説明を一言で：
+          <span class="fill-blank" data-answer="player.x を 0〜(canvas.width-player.width) に収める"></span>
         </li>
 
         <li>
@@ -211,21 +258,19 @@ gameLoop();
         <li>
           もしキャンバスの高さを <span class="code-sample">800</span> に変えたら、弾の消去条件 <span class="code-sample">bullet.y &lt; 0</span>
           はそのままで良いか？理由とともに答えよ：<br>
-          <span class="fill-blank" data-answer="良い。上端は常に0で変わらないから"></span>
+          <span class="fill-blank" data-answer="考え方は同じ（上端は0）。ただしこのコードは b.y+b.size&lt;0 を使う"></span>
         </li>
         <div class="page-break"></div>
 
 
         <li>
-          次のキー入力を順に1回ずつ処理したとき、最終的な <span class="code-sample">player.x</span> は？<br>
-          初期値は <span class="code-sample">canvas.width/2 - 15 (=225)</span>、幅は <span
-            class="code-sample">480</span>。入力：左矢印 → 右矢印 → 右矢印 → 右矢印。移動量は各10。<br>
-          <span class="fill-blank" data-answer="245"></span>
+          自機の初期xは <span class="code-sample">canvas.width / 2 - 30 / 2</span>。キャンバス幅480のとき、初期xはいくつ？
+          <span class="fill-blank" data-answer="225"></span>
         </li>
 
         <li>
-          60fps環境で <span class="code-sample">vy = -5</span> の弾は、1秒で何ピクセル進むか（上方向）：<br>
-          <span class="fill-blank" data-answer="-300（ピクセル）"></span>
+          60fps環境で <span class="code-sample">vy = -8</span> の弾は、1秒で何ピクセル進むか（上方向）：<br>
+          <span class="fill-blank" data-answer="-480（ピクセル）"></span>
         </li>
         
 
@@ -250,6 +295,7 @@ gameLoop();
         <li>イベントリスナー … <span class="fill-blank" data-answer="入力や出来事に反応する仕組み"></span></li>
         <li>ゲームループ … <span class="fill-blank" data-answer="update()→draw()を繰り返す処理"></span></li>
         <li>requestAnimationFrame … <span class="fill-blank" data-answer="ブラウザの描画タイミングで関数を呼ぶAPI"></span></li>
+        <li>Image … <span class="fill-blank" data-answer="画像を読み込むためのオブジェクト"></span></li>
       </ul>
     </details>
   </main>

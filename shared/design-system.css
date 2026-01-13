@@ -1,0 +1,229 @@
+/*
+  Design-system-inspired base CSS (original implementation)
+  - Inspired by Digital Agency design system example components (HTML)
+  - Uses design tokens via CSS custom properties
+*/
+
+:root {
+  /* Fonts */
+  --font-family-sans: system-ui, -apple-system, "Segoe UI", "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+  --font-family-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Noto Sans Mono", "Courier New", monospace;
+
+  /* Primitive-ish colors (small, project-focused subset) */
+  --color-neutral-white: #ffffff;
+  --color-neutral-black: #000000;
+
+  --color-neutral-solid-gray-50: #f2f2f2;
+  --color-neutral-solid-gray-100: #e6e6e6;
+  --color-neutral-solid-gray-200: #cccccc;
+  --color-neutral-solid-gray-300: #b3b3b3;
+  --color-neutral-solid-gray-420: #949494;
+  --color-neutral-solid-gray-536: #767676;
+  --color-neutral-solid-gray-600: #666666;
+  --color-neutral-solid-gray-700: #4d4d4d;
+  --color-neutral-solid-gray-800: #333333;
+  --color-neutral-solid-gray-900: #1a1a1a;
+
+  --color-primitive-blue-600: #3460fb;
+  --color-primitive-blue-800: #0031d8;
+  --color-primitive-blue-900: #0017c1;
+
+  --color-primitive-yellow-300: #ffd43d;
+
+  /* Semantic-ish tokens */
+  --color-text: var(--color-neutral-solid-gray-800);
+  --color-text-muted: var(--color-neutral-solid-gray-536);
+  --color-bg: var(--color-neutral-white);
+  --color-surface: var(--color-neutral-white);
+  --color-surface-2: var(--color-neutral-solid-gray-50);
+  --color-border: var(--color-neutral-solid-gray-420);
+  --color-link: var(--color-primitive-blue-900);
+
+  --focus-ring: 0 0 0 calc(2 / 16 * 1rem) var(--color-primitive-yellow-300);
+
+  /* Elevation (small subset) */
+  --elevation-1: 0 1px 2px rgba(0, 0, 0, 0.08);
+
+  /* Radius */
+  --radius-4: calc(4 / 16 * 1rem);
+  --radius-8: calc(8 / 16 * 1rem);
+  --radius-12: calc(12 / 16 * 1rem);
+
+  /* Spacing */
+  --space-4: calc(4 / 16 * 1rem);
+  --space-8: calc(8 / 16 * 1rem);
+  --space-12: calc(12 / 16 * 1rem);
+  --space-16: calc(16 / 16 * 1rem);
+  --space-24: calc(24 / 16 * 1rem);
+  --space-32: calc(32 / 16 * 1rem);
+
+  color-scheme: light;
+}
+
+/* Baseline */
+:where(*, *::before, *::after) {
+  box-sizing: border-box;
+}
+
+html {
+  scrollbar-gutter: stable;
+  font-family: var(--font-family-sans);
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-weight: normal;
+  font-size: calc(16 / 16 * 1rem);
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  overflow-wrap: anywhere;
+}
+
+:where(a):any-link {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-decoration-thickness: calc(1 / 16 * 1rem);
+  text-underline-offset: calc(3 / 16 * 1rem);
+}
+
+:where(a):any-link:hover {
+  text-decoration-thickness: calc(2 / 16 * 1rem);
+}
+
+:where(code, pre, kbd, samp) {
+  font-family: var(--font-family-mono);
+  letter-spacing: 0;
+}
+
+:where(pre) {
+  margin: var(--space-16) 0;
+  overflow-x: auto;
+  background: var(--color-neutral-solid-gray-800);
+  color: var(--color-neutral-solid-gray-50);
+  border-radius: var(--radius-8);
+  border: 1px solid transparent;
+  padding: var(--space-12) var(--space-16);
+  font-size: calc(14 / 16 * 1rem);
+  line-height: 1.6;
+}
+
+:where(pre) code {
+  display: block;
+}
+
+:where(:focus-visible) {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Small UI primitives used in this repo */
+.ds-container {
+  max-width: 980px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-16);
+  padding-right: var(--space-16);
+}
+
+.ds-panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-12);
+  box-shadow: var(--elevation-1);
+  padding: var(--space-16);
+}
+
+.ds-button {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  border-radius: calc(9999 / 16 * 1rem);
+  border: 1px solid var(--color-border);
+  padding: calc(8 / 16 * 1rem) calc(12 / 16 * 1rem);
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ds-button:hover {
+  background: var(--color-neutral-solid-gray-100);
+}
+
+.ds-select {
+  border-radius: var(--radius-8);
+  border: 1px solid var(--color-border);
+  padding: calc(8 / 16 * 1rem) calc(10 / 16 * 1rem);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+
+.ds-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--color-border);
+}
+
+.ds-table th,
+.ds-table td {
+  border-top: 1px solid var(--color-border);
+  padding: calc(12 / 16 * 1rem) calc(16 / 16 * 1rem);
+  text-align: left;
+  vertical-align: top;
+}
+
+.ds-table thead th {
+  border-top: 0;
+  background: var(--color-surface-2);
+  font-weight: bold;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --color-text: #e6e6e6;
+    --color-text-muted: #b3b3b3;
+    --color-bg: #1a1a1a;
+    --color-surface: #252526;
+    --color-surface-2: #2d2d2d;
+    --color-border: #4d4d4d;
+    --color-link: #79a6ff;
+    --elevation-1: 0 1px 2px rgba(0, 0, 0, 0.45);
+  }
+
+  :where(pre) {
+    background: #1e1e1e;
+    color: #e6e6e6;
+  }
+
+  .ds-button:hover {
+    background: #333333;
+  }
+
+  .ds-table thead th {
+    background: #2d2d2d;
+  }
+}
+
+@media print {
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    color: CanvasText;
+    background: Canvas;
+  }
+
+  :where(pre) {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+  }
+}

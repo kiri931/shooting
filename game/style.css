@@ -1,21 +1,25 @@
-/* ゲーム用canvasを中央に表示し、背景色を設定 */
+@import url("../shared/design-system.css");
+
+/* ゲーム画面はキャンバス中心＋暗い背景（デザインシステムのトークンで表現） */
 body {
-  background: #222;
+  background: var(--color-neutral-solid-gray-900);
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  margin: 0;
 }
 
 #gameCanvas {
-  background: #ffffff;
-  border: 2px solid #333;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  background: var(--color-neutral-white);
+  border: 1px solid var(--color-neutral-solid-gray-420);
+  border-radius: var(--radius-8);
+  box-shadow: var(--elevation-1);
   display: block;
 }
 
-#lifeBoard, #scoreBoard {
-  color: #ffffff;
-  font-size: 50px;
+#lifeBoard,
+#scoreBoard {
+  color: var(--color-neutral-white);
+  font-size: calc(40 / 16 * 1rem);
+  letter-spacing: 0;
 }

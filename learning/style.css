@@ -1,112 +1,149 @@
+@import url("../shared/design-system.css");
+
 /* Theme control (auto/light/dark)
    - auto: follows prefers-color-scheme
-   - light: pastel palette
-   - dark: VS Code-like palette
+   - light/dark: overridden via data-theme (learning/theme.js)
+   - This file keeps existing class names but maps colors/typography to shared tokens.
 */
 :root {
   color-scheme: light;
-  --bg: #f6f7ff;
-  --surface: #ffffff;
-  --surface-2: #eef2ff;
-  --text: #1f2937;
-  --muted: #667085;
-  --border: #d6dbe8;
-  --link: #2563eb;
-  --accent: #7c3aed;
-  --focus: #7c3aed;
 
-  --btn-bg: #eef2ff;
-  --btn-text: #1f2937;
-  --btn-border: #cfd6eb;
+  /* Override shared semantic tokens for this app */
+  --color-text: var(--color-neutral-solid-gray-800);
+  --color-text-muted: var(--color-neutral-solid-gray-536);
+  --color-bg: var(--color-neutral-white);
+  --color-surface: var(--color-neutral-white);
+  --color-surface-2: var(--color-neutral-solid-gray-50);
+  --color-border: var(--color-neutral-solid-gray-200);
+  --color-link: var(--color-primitive-blue-900);
 
-  --tab-bg: #ffffff;
-  --tab-active-bg: #eef2ff;
+  /* Keep legacy variable names (used throughout this file) */
+  --bg: var(--color-bg);
+  --surface: var(--color-surface);
+  --surface-2: var(--color-surface-2);
+  --text: var(--color-text);
+  --muted: var(--color-text-muted);
+  --border: var(--color-border);
+  --link: var(--color-link);
+  --accent: var(--color-primitive-blue-800);
+  --focus: var(--color-primitive-yellow-300);
 
-  --code-bg: #f3f4f6;
-  --code-text: #111827;
-  --code-border: #d6dbe8;
+  --btn-bg: var(--color-surface-2);
+  --btn-text: var(--color-text);
+  --btn-border: var(--color-border);
 
-  --shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --tab-bg: var(--color-surface);
+  --tab-active-bg: var(--color-surface-2);
+
+  --code-bg: var(--color-surface-2);
+  --code-text: var(--color-text);
+  --code-border: var(--color-border);
+
+  --shadow: var(--elevation-1);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
-    --bg: #1e1e1e;
-    --surface: #252526;
-    --surface-2: #2d2d2d;
-    --text: #d4d4d4;
-    --muted: #9aa0a6;
-    --border: #3c3c3c;
-    --link: #3794ff;
-    --accent: #007acc;
-    --focus: #007acc;
+    --color-text: #e6e6e6;
+    --color-text-muted: #b3b3b3;
+    --color-bg: #1a1a1a;
+    --color-surface: #252526;
+    --color-surface-2: #2d2d2d;
+    --color-border: #4d4d4d;
+    --color-link: #79a6ff;
 
-    --btn-bg: #2d2d30;
-    --btn-text: #d4d4d4;
-    --btn-border: #3c3c3c;
+    --bg: var(--color-bg);
+    --surface: var(--color-surface);
+    --surface-2: var(--color-surface-2);
+    --text: var(--color-text);
+    --muted: var(--color-text-muted);
+    --border: var(--color-border);
+    --link: var(--color-link);
+    --accent: #79a6ff;
+    --focus: var(--color-primitive-yellow-300);
 
-    --tab-bg: #2d2d2d;
-    --tab-active-bg: #1e1e1e;
+    --btn-bg: var(--color-surface-2);
+    --btn-text: var(--color-text);
+    --btn-border: var(--color-border);
+
+    --tab-bg: var(--color-surface-2);
+    --tab-active-bg: var(--color-bg);
 
     --code-bg: #1e1e1e;
-    --code-text: #d4d4d4;
-    --code-border: #3c3c3c;
+    --code-text: var(--color-text);
+    --code-border: var(--color-border);
 
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+    --shadow: var(--elevation-1);
   }
 }
 
 :root[data-theme="light"] {
   color-scheme: light;
-  --bg: #f6f7ff;
-  --surface: #ffffff;
-  --surface-2: #eef2ff;
-  --text: #1f2937;
-  --muted: #667085;
-  --border: #d6dbe8;
-  --link: #2563eb;
-  --accent: #7c3aed;
-  --focus: #7c3aed;
+  --color-text: var(--color-neutral-solid-gray-800);
+  --color-text-muted: var(--color-neutral-solid-gray-536);
+  --color-bg: var(--color-neutral-white);
+  --color-surface: var(--color-neutral-white);
+  --color-surface-2: var(--color-neutral-solid-gray-50);
+  --color-border: var(--color-neutral-solid-gray-200);
+  --color-link: var(--color-primitive-blue-900);
 
-  --btn-bg: #eef2ff;
-  --btn-text: #1f2937;
-  --btn-border: #cfd6eb;
+  --bg: var(--color-bg);
+  --surface: var(--color-surface);
+  --surface-2: var(--color-surface-2);
+  --text: var(--color-text);
+  --muted: var(--color-text-muted);
+  --border: var(--color-border);
+  --link: var(--color-link);
+  --accent: var(--color-primitive-blue-800);
+  --focus: var(--color-primitive-yellow-300);
 
-  --tab-bg: #ffffff;
-  --tab-active-bg: #eef2ff;
+  --btn-bg: var(--color-surface-2);
+  --btn-text: var(--color-text);
+  --btn-border: var(--color-border);
 
-  --code-bg: #f3f4f6;
-  --code-text: #111827;
-  --code-border: #d6dbe8;
+  --tab-bg: var(--color-surface);
+  --tab-active-bg: var(--color-surface-2);
 
-  --shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --code-bg: var(--color-surface-2);
+  --code-text: var(--color-text);
+  --code-border: var(--color-border);
+
+  --shadow: var(--elevation-1);
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #1e1e1e;
-  --surface: #252526;
-  --surface-2: #2d2d2d;
-  --text: #d4d4d4;
-  --muted: #9aa0a6;
-  --border: #3c3c3c;
-  --link: #3794ff;
-  --accent: #007acc;
-  --focus: #007acc;
+  --color-text: #e6e6e6;
+  --color-text-muted: #b3b3b3;
+  --color-bg: #1a1a1a;
+  --color-surface: #252526;
+  --color-surface-2: #2d2d2d;
+  --color-border: #4d4d4d;
+  --color-link: #79a6ff;
 
-  --btn-bg: #2d2d30;
-  --btn-text: #d4d4d4;
-  --btn-border: #3c3c3c;
+  --bg: var(--color-bg);
+  --surface: var(--color-surface);
+  --surface-2: var(--color-surface-2);
+  --text: var(--color-text);
+  --muted: var(--color-text-muted);
+  --border: var(--color-border);
+  --link: var(--color-link);
+  --accent: #79a6ff;
+  --focus: var(--color-primitive-yellow-300);
 
-  --tab-bg: #2d2d2d;
-  --tab-active-bg: #1e1e1e;
+  --btn-bg: var(--color-surface-2);
+  --btn-text: var(--color-text);
+  --btn-border: var(--color-border);
+
+  --tab-bg: var(--color-surface-2);
+  --tab-active-bg: var(--color-bg);
 
   --code-bg: #1e1e1e;
-  --code-text: #d4d4d4;
-  --code-border: #3c3c3c;
+  --code-text: var(--color-text);
+  --code-border: var(--color-border);
 
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow: var(--elevation-1);
 }
 
 body {
@@ -114,6 +151,7 @@ body {
   background: var(--bg);
   color: var(--text);
   line-height: 1.5;
+  font-family: var(--font-family-sans);
 }
 
 .header {
@@ -247,12 +285,7 @@ h1 {
 }
 
 .guide {
-  margin: 16px;
-  padding: 12px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  border-radius: 12px;
-  box-shadow: var(--shadow);
+  margin: 0;
 }
 
 .guide-head {
@@ -320,7 +353,7 @@ h1 {
 
 @media (min-width: 1100px) {
   .workspace {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(280px, 0.9fr) 1fr 1fr;
     align-items: start;
   }
 }
@@ -427,18 +460,31 @@ iframe {
 .codePane {
   margin: 0;
   padding: 0;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 12px;
-  line-height: 1.5;
-  white-space: pre;
-  overflow: auto;
+  overflow: hidden;
   user-select: none;
   background: transparent;
   color: inherit;
 }
 
 .codePane code {
+  display: block;
+  padding: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre;
+  overflow: auto;
   user-select: none;
+}
+
+/* Sample viewer as read-only CodeMirror (same theme as editor) */
+.sampleCode .CodeMirror {
+  height: auto;
+  background: transparent;
+}
+
+.sampleCode .CodeMirror-scroll {
+  height: auto;
 }
 
 .status {
@@ -480,7 +526,7 @@ textarea {
   background: var(--code-bg);
   color: var(--code-text);
   padding: 12px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: var(--font-family-mono);
   font-size: 13px;
   line-height: 1.6;
   box-sizing: border-box;
@@ -495,7 +541,7 @@ textarea {
 
 /* CodeMirror (editor) */
 .CodeMirror {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: var(--font-family-mono);
   font-size: 13px;
   line-height: 1.6;
   border: 1px solid var(--code-border);

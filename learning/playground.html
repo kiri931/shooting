@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Playground</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=20260113" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.css" />
   <link id="cmThemeLink" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/theme/eclipse.min.css" />
 </head>
@@ -27,15 +27,15 @@
     </div>
   </header>
 
-  <section id="guide" class="guide" hidden>
-    <div class="guide-head">
-      <h2 class="h2" id="guideTitle">このStepのガイド</h2>
-      <a id="guideOpen" class="guide-link" target="_blank" rel="noreferrer">guide.md を別タブで開く</a>
-    </div>
-    <div id="guideBody" class="guide-body"></div>
-  </section>
-
   <main class="workspace">
+    <section id="guide" class="col guide" hidden>
+      <div class="guide-head">
+        <h2 class="h2" id="guideTitle">このStepのガイド</h2>
+        <a id="guideOpen" class="guide-link" target="_blank" rel="noreferrer">guide.md を別タブで開く</a>
+      </div>
+      <div id="guideBody" class="guide-body"></div>
+    </section>
+
     <section class="col">
       <h2 class="h2">サンプル</h2>
       <div class="iframeWrap">
@@ -122,8 +122,8 @@
   <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/css/css.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/javascript/javascript.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
-  <script src="theme.js"></script>
-  <script src="playground.js"></script>
+  <script src="theme.js?v=20260113"></script>
+  <script src="playground.js?v=20260113"></script>
 </body>
 
 </html>

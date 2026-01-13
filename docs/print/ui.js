@@ -12,7 +12,9 @@
     previewing = on;
     body.classList.toggle('mode-edit', !on);
     body.classList.toggle('mode-preview', on); // mode-preview は :root 既定（白黒）をそのまま使う
-    toggleBtn.textContent = on ? '編集表示に戻す' : 'プレビュー表示';
+    if (toggleBtn) {
+      toggleBtn.textContent = on ? '編集表示に戻す' : 'プレビュー表示';
+    }
   }
 
   if (toggleBtn) {
@@ -61,6 +63,10 @@
   } else if (mq.addListener) {
     mq.addListener(e => e.matches ? setPreviewMode(true) : setPreviewMode(wasPreviewing));
   }
+
+  // 他スクリプトから呼べるように公開（print2統合向け）
+  window.updateAnswers = updateAnswers;
+  window.setPreviewMode = setPreviewMode;
 })();
 
 document.addEventListener("DOMContentLoaded", () => {

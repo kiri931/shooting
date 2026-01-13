@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>HTML構造クイズ - シューティングゲーム編</title>
+  <title>HTML構造クイズ - Step1（Canvasを表示する）</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,7 +14,7 @@
   </header>
 
   <main>
-    <h1>HTML構造クイズ（シューティングゲーム）</h1>
+    <h1>HTML構造クイズ（Step1: Canvasを表示する）</h1>
 
     <ol>
       <li>
@@ -58,17 +58,27 @@
       </li>
 
       <li>
-        <p><strong>Q5.</strong> <code>&lt;link rel="stylesheet" href="style.css"&gt;</code> について、stylesheetとは何ですか？ また、指定されているファイル名はどれですか？</p>
+        <p><strong>Q5.</strong> <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;</code> の目的として正しいものはどれ？</p>
         <ul>
-          <li>① JavaScriptで動きをつける設定ファイル／main.js</li>
-          <li>② ページのデザインを指定するCSSファイル／style.css</li>
-          <li>③ サーバー設定ファイル／index.html</li>
-          <li>④ データベース接続用の設定ファイル／config.json</li>
+          <li>① 文字コードをUTF-8にする</li>
+          <li>② スマホ等でも見やすいように表示領域（拡大率）を調整する</li>
+          <li>③ ページのタイトルを設定する</li>
+          <li>④ 画像を読み込む</li>
         </ul>
       </li>
 
       <li>
-        <p><strong>Q6.</strong> <code>&lt;canvas id="gameCanvas" width="480" height="640"&gt;&lt;/canvas&gt;</code> の横幅を <strong>1020</strong> に変更したい場合、どの部分を直せばよいですか？</p>
+        <p><strong>Q6.</strong> <code>&lt;link rel="stylesheet" href="style.css" /&gt;</code> について正しい説明はどれ？</p>
+        <ul>
+          <li>① ページのデザイン（CSS）を読み込む</li>
+          <li>② JavaScriptを読み込む</li>
+          <li>③ 画像を読み込む</li>
+          <li>④ ページの言語を設定する</li>
+        </ul>
+      </li>
+
+      <li>
+        <p><strong>Q7.</strong> <code>&lt;canvas id="gameCanvas" width="480" height="640"&gt;&lt;/canvas&gt;</code> の横幅を <strong>1020</strong> に変更したい場合、どの部分を直せばよいですか？</p>
         <ul>
           <li>① height="1020"</li>
           <li>② width="1020"</li>
@@ -78,12 +88,12 @@
       </li>
 
       <li>
-        <p><strong>Q7.</strong> JavaScriptで記述されている外部ファイルの名前はどれですか？</p>
+        <p><strong>Q8.</strong> JavaScriptの外部ファイルを読み込むタグはどれ？</p>
         <ul>
-          <li>① style.css</li>
-          <li>② main.js</li>
-          <li>③ script.html</li>
-          <li>④ play.js</li>
+          <li>① &lt;script src="main.js"&gt;&lt;/script&gt;</li>
+          <li>② &lt;link src="main.js"&gt;</li>
+          <li>③ &lt;meta src="main.js"&gt;</li>
+          <li>④ &lt;canvas src="main.js"&gt;</li>
         </ul>
       </li>
     </ol>
@@ -96,8 +106,9 @@
         <li>Q3 → ②</li>
         <li>Q4 → ③</li>
         <li>Q5 → ②</li>
-        <li>Q6 → ②</li>
+        <li>Q6 → ①</li>
         <li>Q7 → ②</li>
+        <li>Q8 → ①</li>
       </ul>
     </details>
   </main>
