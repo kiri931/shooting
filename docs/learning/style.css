@@ -28,9 +28,10 @@
   --accent: var(--color-primitive-blue-800);
   --focus: var(--color-primitive-yellow-300);
 
-  --btn-bg: var(--color-surface-2);
+  /* Light mode: make buttons more visible */
+  --btn-bg: var(--color-neutral-solid-gray-100);
   --btn-text: var(--color-text);
-  --btn-border: var(--color-border);
+  --btn-border: var(--color-neutral-solid-gray-300);
 
   --tab-bg: var(--color-surface);
   --tab-active-bg: var(--color-surface-2);
@@ -98,9 +99,9 @@
   --accent: var(--color-primitive-blue-800);
   --focus: var(--color-primitive-yellow-300);
 
-  --btn-bg: var(--color-surface-2);
+  --btn-bg: var(--color-neutral-solid-gray-100);
   --btn-text: var(--color-text);
-  --btn-border: var(--color-border);
+  --btn-border: var(--color-neutral-solid-gray-300);
 
   --tab-bg: var(--color-surface);
   --tab-active-bg: var(--color-surface-2);
@@ -180,6 +181,20 @@ body {
   justify-content: flex-end;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.header-actions .controlGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .themeLabel {
   font-size: 12px;
   color: var(--muted);
@@ -192,6 +207,38 @@ body {
   color: var(--text);
   border-radius: 6px;
   font-size: 12px;
+}
+
+.textInput {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 6px;
+  font-size: 12px;
+  min-width: 160px;
+}
+
+.btnLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border: 1px solid var(--btn-border);
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
+}
+
+.btnLink:hover {
+  filter: brightness(0.98);
+}
+
+.btnLink:active {
+  filter: brightness(0.95);
 }
 
 .saveInfo {
@@ -267,14 +314,32 @@ h1 {
   color: var(--btn-text);
   border-radius: 999px;
   cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
 }
 
 .btn:hover {
-  opacity: 0.92;
+  filter: brightness(0.98);
 }
 
 .btn:active {
-  opacity: 0.85;
+  filter: brightness(0.95);
+}
+
+.btnRun {
+  background: #1f883d;
+  border-color: #1a7f37;
+  color: #ffffff;
+}
+
+.btnRun:hover {
+  background: #1a7f37;
+  opacity: 1;
+}
+
+.btnRun:active {
+  background: #166534;
+  opacity: 1;
 }
 
 .workspace {
@@ -311,6 +376,68 @@ h1 {
   font-size: 13px;
   line-height: 1.6;
   border-radius: 10px;
+}
+
+.guideDiffDetails {
+  margin-top: 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px;
+  background: var(--surface-2);
+}
+
+.guideDiffDetails > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.diffControls {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin: 0 0 10px;
+}
+
+.diffView {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--code-bg);
+  color: var(--code-text);
+}
+
+.diffLine {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 10px;
+  padding: 2px 10px;
+  font-family: var(--font-family-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre;
+}
+
+.diffSign {
+  opacity: 0.85;
+}
+
+.diffAdd {
+  background: color-mix(in srgb, #2ea043 18%, transparent);
+}
+
+.diffDel {
+  background: color-mix(in srgb, #f85149 18%, transparent);
+}
+
+.diffEq {
+  background: transparent;
+}
+
+.diffHint {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 12px;
 }
 
 .guide-body h3 {
@@ -353,6 +480,7 @@ h1 {
 
 @media (min-width: 1100px) {
   .workspace {
+    /* guide | sample | my-code */
     grid-template-columns: minmax(280px, 0.9fr) 1fr 1fr;
     align-items: start;
   }
@@ -389,7 +517,8 @@ h1 {
   margin-left: auto;
   display: flex;
   gap: 10px;
-  align-items: center;
+  align-items: flex-end;
+  flex-wrap: wrap;
 }
 
 .myTabs .controlGroup {
@@ -562,6 +691,7 @@ textarea {
 .btn:focus-visible,
 .tab:focus-visible,
 .select:focus-visible,
+input:focus-visible,
 textarea:focus-visible,
 a:focus-visible {
   outline: 2px solid var(--focus);
@@ -571,4 +701,87 @@ a:focus-visible {
 textarea::selection,
 .codePane ::selection {
   background: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+/* ===== Progress viewer ===== */
+.back {
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.sub {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.viewerList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: calc(100vh - 240px);
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.viewerRow {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+  padding: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.viewerRow:hover {
+  filter: brightness(0.98);
+}
+
+.viewerRow.isSelected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.viewerRowTitle {
+  font-weight: 700;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.viewerRowSub {
+  font-size: 12px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.viewerEmpty {
+  color: var(--muted);
+  font-size: 13px;
+  padding: 10px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+}
+
+.viewerCode {
+  margin-top: 10px;
+  height: 60vh;
+  min-height: 360px;
+}
+
+.viewerCode .CodeMirror {
+  height: 100%;
+}
+
+@media (max-width: 1099px) {
+  .viewerList {
+    max-height: none;
+  }
+
+  .viewerCode {
+    height: 50vh;
+    min-height: 320px;
+  }
 }

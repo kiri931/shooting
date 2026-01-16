@@ -120,6 +120,7 @@ function renderGuideMarkdown(mdText) {
 }
 
 const STORAGE_PREFIX = "shooting:learning:playground:v1";
+const EXPORT_NAME_STORAGE_KEY = "shooting:learning:playground:exportName:v1";
 
 function getStepStorageKey(step) {
   return `${STORAGE_PREFIX}:${step}`;
@@ -215,6 +216,46 @@ function downloadJson(filename, obj) {
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
+function sanitizeFilenameBase(name) {
+  const raw = String(name ?? "").trim();
+  if (!raw) return "";
+  // Windows でも安全な文字に寄せる
+  return raw
+    .replace(/[\\/:*?"<>|]/g, "_")
+    .replace(/\s+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 80);
+}
+
+function readExportName() {
+  try {
+    return localStorage.getItem(EXPORT_NAME_STORAGE_KEY) || "";
+  } catch {
+    return "";
+  }
+}
+
+function saveExportName(v) {
+  try {
+    localStorage.setItem(EXPORT_NAME_STORAGE_KEY, String(v ?? ""));
+  } catch {
+    // ignore
+  }
+}
+
+function buildExportFilename({ baseName, kind, date = new Date() }) {
+  const safeBase = sanitizeFilenameBase(baseName);
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  const stamp = `${y}${m}${d}`;
+
+  const prefix = safeBase ? `${safeBase}-` : "";
+  if (kind === "submit") return `${prefix}shooting-learning-submit-${stamp}.json`;
+  return `${prefix}shooting-learning-export-${stamp}.json`;
 }
 
 function stripStepExternalRefs(html) {
@@ -872,34 +913,341 @@ async function setupGuide(step) {
     const guide = await loadOptionalText(guidePath);
     const guideWrap = document.getElementById("guide");
     const guideTitle = document.getElementById("guideTitle");
-    const guideBody = document.getElementById("guideBody");
-    const guideOpen = document.getElementById("guideOpen");
+    const guideStepWrap = document.getElementById("guideStepWrap");
+    const guideStepBody = document.getElementById("guideStepBody");
+    const guideHowtoBody = document.getElementById("guideHowtoBody");
+
+    if (!guideWrap || !guideTitle || !guideStepWrap || !guideStepBody || !guideHowtoBody) return;
 
     const commonGuide = `# Playgroundの使い方\n\n- 右側（自分のコード）のHTML/CSS/JavaScriptを編集して、上の「実行」を押すと右のプレビューに反映されます。\n- 編集内容は自動保存されます（上部の「自動保存:」に保存時刻が出ます）。\n- 「エクスポート」でJSONとして保存し、「インポート」で別PCや別ブラウザに持っていけます。\n- 「このStepをリセット」は、このStepの保存データ（自分のコード）だけを初期状態に戻します。\n\n## 画像のパス\n\n- 画像は主に \`learning/image/\` を参照します。例: \`../image/player.png\`\n- パスが合わないときは、まず画像ファイルの場所と拡張子を確認してください。\n\n## JavaScriptをファイル分けしたいとき（Step9以降）\n\n- 複数ファイル形式にしたい場合は、JS欄に次のような区切りを入れられます。\n\n\`\`\`js\n// --- file: main.js ---\n// ここにmainの内容\n\n// --- file: player.js ---\n// ここにplayerの内容\n\`\`\`\n\n- どのファイル名にするかは、各Stepのサンプル側の構成に合わせてください。\n`;
 
+    guideWrap.hidden = false;
+    guideTitle.textContent = `ガイド: ${step}`;
+
+    guideHowtoBody.innerHTML = renderGuideMarkdown(commonGuide);
+    highlightAllCodeWithin(guideHowtoBody);
+
     if (guide) {
-      guideWrap.hidden = false;
-      guideTitle.textContent = `ガイド: ${step}`;
       const cleaned = stripLiveServerInjection(guide);
-      guideBody.innerHTML = renderGuideMarkdown(`${commonGuide}\n\n# このStepのガイド\n\n${cleaned}`);
-      highlightAllCodeWithin(guideBody);
-      guideOpen.href = guidePath;
+      guideStepBody.innerHTML = renderGuideMarkdown(cleaned);
     } else {
-      guideWrap.hidden = true;
+      guideStepBody.innerHTML = `<p>このStepのガイドはありません。</p>`;
     }
+    highlightAllCodeWithin(guideStepBody);
+
+    // Tabs: step / howto
+    const tabButtons = Array.from(document.querySelectorAll("[data-guide-tab]"));
+    const panes = {
+      step: guideStepWrap,
+      howto: guideHowtoBody,
+    };
+
+    const STORAGE_KEY = `shooting:learning:playground:guideTab:v1:${step}`;
+    const readPref = () => {
+      try {
+        const v = localStorage.getItem(STORAGE_KEY);
+        return v === "howto" ? "howto" : "step";
+      } catch {
+        return "step";
+      }
+    };
+    const savePref = (v) => {
+      try {
+        localStorage.setItem(STORAGE_KEY, v);
+      } catch {
+        // ignore
+      }
+    };
+
+    const setActive = (key) => {
+      const k = key === "howto" ? "howto" : "step";
+      if (panes.step) panes.step.hidden = k !== "step";
+      if (panes.howto) panes.howto.hidden = k !== "howto";
+      for (const btn of tabButtons) {
+        const active = btn.dataset.guideTab === k;
+        btn.setAttribute("aria-selected", active ? "true" : "false");
+      }
+      savePref(k);
+    };
+
+    for (const btn of tabButtons) {
+      btn.addEventListener("click", () => setActive(btn.dataset.guideTab));
+    }
+    setActive(readPref());
   } catch {
     // ガイド表示は任意機能なので、失敗しても致命的にしない
     const guideWrap = document.getElementById("guide");
-    if (guideWrap) guideWrap.hidden = true;
+    if (guideWrap) guideWrap.hidden = false;
   }
+}
+
+function splitLines(text) {
+  const s = String(text ?? "").replace(/\r\n?/g, "\n");
+  // 末尾の空行も保持したいので、split("\n") のまま
+  return s.split("\n");
+}
+
+function myersDiffLines(aLines, bLines) {
+  const a = Array.isArray(aLines) ? aLines : [];
+  const b = Array.isArray(bLines) ? bLines : [];
+  const N = a.length;
+  const M = b.length;
+  const max = N + M;
+
+  let v = new Map();
+  v.set(1, 0);
+  const trace = [];
+
+  for (let d = 0; d <= max; d++) {
+    const vNext = new Map();
+    for (let k = -d; k <= d; k += 2) {
+      const vKMinus = v.get(k - 1);
+      const vKPlus = v.get(k + 1);
+
+      let x;
+      if (k === -d || (k !== d && (vKMinus ?? -1) < (vKPlus ?? -1))) {
+        x = vKPlus ?? 0;
+      } else {
+        x = (vKMinus ?? 0) + 1;
+      }
+      let y = x - k;
+
+      while (x < N && y < M && a[x] === b[y]) {
+        x++;
+        y++;
+      }
+
+      vNext.set(k, x);
+      if (x >= N && y >= M) {
+        trace.push(vNext);
+        return backtrackMyers(trace, a, b);
+      }
+    }
+    trace.push(vNext);
+    v = vNext;
+  }
+
+  return backtrackMyers(trace, a, b);
+}
+
+function backtrackMyers(trace, a, b) {
+  let x = a.length;
+  let y = b.length;
+  const edits = [];
+
+  for (let d = trace.length - 1; d >= 0; d--) {
+    const v = trace[d];
+    const k = x - y;
+
+    const vKMinus = v.get(k - 1);
+    const vKPlus = v.get(k + 1);
+
+    let prevK;
+    if (k === -d || (k !== d && (vKMinus ?? -1) < (vKPlus ?? -1))) {
+      prevK = k + 1;
+    } else {
+      prevK = k - 1;
+    }
+
+    const prevX = v.get(prevK) ?? 0;
+    const prevY = prevX - prevK;
+
+    while (x > prevX && y > prevY) {
+      edits.push({ type: "equal", line: a[x - 1] });
+      x--;
+      y--;
+    }
+
+    if (d === 0) break;
+
+    if (x === prevX) {
+      edits.push({ type: "add", line: b[y - 1] });
+      y--;
+    } else {
+      edits.push({ type: "del", line: a[x - 1] });
+      x--;
+    }
+  }
+
+  edits.reverse();
+  return edits;
+}
+
+function renderDiffToElement(container, { beforeText, afterText }) {
+  if (!container) return;
+
+  const a = splitLines(beforeText);
+  const b = splitLines(afterText);
+  const ops = myersDiffLines(a, b);
+
+  // 末尾の split で必ず1行目が出るので、両方空なら空扱い
+  const onlyEmpty = a.length === 1 && a[0] === "" && b.length === 1 && b[0] === "";
+  if (onlyEmpty) {
+    container.innerHTML = '<div class="diffLine diffEq"><span class="diffSign"> </span><span>（差分なし）</span></div>';
+    return;
+  }
+
+  const hasChange = ops.some((o) => o.type !== "equal");
+  if (!hasChange) {
+    container.innerHTML = '<div class="diffLine diffEq"><span class="diffSign"> </span><span>（差分なし）</span></div>';
+    return;
+  }
+
+  const escape = (s) =>
+    String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+
+  const html = ops
+    .map((o) => {
+      if (o.type === "add") {
+        return `<div class="diffLine diffAdd"><span class="diffSign">+</span><span>${escape(o.line)}</span></div>`;
+      }
+      if (o.type === "del") {
+        return `<div class="diffLine diffDel"><span class="diffSign">-</span><span>${escape(o.line)}</span></div>`;
+      }
+      return `<div class="diffLine diffEq"><span class="diffSign"> </span><span>${escape(o.line)}</span></div>`;
+    })
+    .join("");
+  container.innerHTML = html;
+}
+
+function setupDiffViewer({ step, editors, getUserJsCombined, sample }) {
+  const diffKind = document.getElementById("diffKind");
+  const diffJsFile = document.getElementById("diffJsFile");
+  const diffJsFileWrap = document.getElementById("diffJsFileWrap");
+  const diffView = document.getElementById("diffView");
+  const diffRefreshBtn = document.getElementById("diffRefreshBtn");
+
+  if (!diffKind || !diffView) return;
+
+  const STORAGE_KEY = `shooting:learning:playground:diffPref:v1:${step}`;
+  const readPref = () => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const data = safeJsonParse(raw || "") || {};
+      return {
+        kind: data.kind === "html" || data.kind === "css" || data.kind === "js" ? data.kind : "js",
+        jsFile: typeof data.jsFile === "string" ? data.jsFile : "main.js",
+      };
+    } catch {
+      return { kind: "js", jsFile: "main.js" };
+    }
+  };
+
+  const savePref = (pref) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(pref));
+    } catch {
+      // ignore
+    }
+  };
+
+  const getTexts = () => {
+    const kind = String(diffKind.value || "js");
+    if (kind === "html") {
+      return {
+        beforeText: sample.html,
+        afterText: editors.getValue("html"),
+      };
+    }
+    if (kind === "css") {
+      return {
+        beforeText: sample.css,
+        afterText: editors.getValue("css"),
+      };
+    }
+
+    // js
+    const manifest = Array.isArray(sample.manifestJs) ? sample.manifestJs : null;
+    const userCombined = typeof getUserJsCombined === "function" ? getUserJsCombined() : editors.getValue("js");
+    if (!manifest || manifest.length === 0 || !diffJsFile || !diffJsFileWrap) {
+      return { beforeText: sample.js, afterText: userCombined };
+    }
+
+    const jsFile = String(diffJsFile.value || "main.js");
+    const sampleParsed = parseCombinedJsToFileMap(sample.js, manifest);
+    const userParsed = parseCombinedJsToFileMap(userCombined, manifest);
+    return {
+      beforeText: String(sampleParsed.map.get(jsFile) ?? ""),
+      afterText: String(userParsed.map.get(jsFile) ?? ""),
+    };
+  };
+
+  let updateTimer = null;
+  const scheduleUpdate = () => {
+    if (updateTimer) clearTimeout(updateTimer);
+    updateTimer = setTimeout(() => {
+      const { beforeText, afterText } = getTexts();
+      renderDiffToElement(diffView, { beforeText, afterText });
+    }, 120);
+  };
+
+  const applyKindUi = () => {
+    const kind = String(diffKind.value || "js");
+    const manifest = Array.isArray(sample.manifestJs) ? sample.manifestJs : null;
+    const showJsFile = kind === "js" && manifest && manifest.length > 0 && diffJsFile && diffJsFileWrap;
+    if (diffJsFileWrap) diffJsFileWrap.hidden = !showJsFile;
+  };
+
+  const pref = readPref();
+  diffKind.value = pref.kind;
+
+  // JS file list (manifest)
+  if (diffJsFile && Array.isArray(sample.manifestJs) && sample.manifestJs.length > 0) {
+    diffJsFile.innerHTML = "";
+    for (const name of sample.manifestJs) {
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      diffJsFile.appendChild(opt);
+    }
+    diffJsFile.value = sample.manifestJs.includes(pref.jsFile) ? pref.jsFile : (sample.manifestJs.includes("main.js") ? "main.js" : sample.manifestJs[0]);
+  }
+
+  applyKindUi();
+  scheduleUpdate();
+
+  diffKind.addEventListener("change", () => {
+    applyKindUi();
+    savePref({ kind: diffKind.value, jsFile: diffJsFile ? diffJsFile.value : "" });
+    scheduleUpdate();
+  });
+
+  if (diffJsFile) {
+    diffJsFile.addEventListener("change", () => {
+      savePref({ kind: diffKind.value, jsFile: diffJsFile.value });
+      scheduleUpdate();
+    });
+  }
+
+  if (diffRefreshBtn) diffRefreshBtn.addEventListener("click", scheduleUpdate);
+
+  // editor changes => refresh
+  if (editors && typeof editors.onChange === "function") {
+    editors.onChange(scheduleUpdate);
+  }
+
+  return { scheduleUpdate };
 }
 
 function setupPersistence({ step, getValues, setValues, onAnyChange }) {
   // 保存UI
   const saveInfo = document.getElementById("saveInfo");
   const exportBtn = document.getElementById("exportBtn");
+  const submitBtn = document.getElementById("submitBtn");
   const importFile = document.getElementById("importFile");
   const resetStepBtn = document.getElementById("resetStepBtn");
+  const exportNameInput = document.getElementById("exportName");
+
+  // ファイル名（保存）
+  if (exportNameInput) {
+    exportNameInput.value = readExportName();
+    exportNameInput.addEventListener("input", () => {
+      saveExportName(exportNameInput.value);
+    });
+  }
 
   const updateSaveInfo = (updatedAt) => {
     if (!saveInfo) return;
@@ -939,19 +1287,38 @@ function setupPersistence({ step, getValues, setValues, onAnyChange }) {
 
       removeSavedStep(step);
 
+      // HTML/CSS は「このStepの完成形（サンプル）」を入れる
+      let baseHtml = "";
+      let baseCss = "";
+      let baseJs = "";
+      try {
+        const cur = await loadStepSources(step);
+        baseHtml = stripLiveServerInjection(String(cur.html ?? ""));
+        baseCss = String(cur.css ?? "");
+        baseJs = String(cur.js ?? "");
+      } catch {
+        // 読めない場合は空で続行
+        baseHtml = "";
+        baseCss = "";
+        baseJs = "";
+      }
+
       if (!prevStep) {
-        setValues({ html: "", css: "", js: "" });
-        updateSaveInfo(null);
-        setStatus("このStepの入力をリセットしました。");
+        // step1 など前stepが無い場合は、このStepのサンプルJSを入れる
+        setValues({ html: baseHtml, css: baseCss, js: baseJs });
+        const updatedAt = saveStep(step, getValues());
+        updateSaveInfo(updatedAt);
+        setStatus("このStepの入力をリセットしました（HTML/CSSは完成形、JSはサンプルに戻しました）。");
         return;
       }
 
       const prev = loadSavedStep(prevStep);
       if (prev && (prev.html || prev.css || prev.js)) {
-        setValues({ html: prev.html, css: prev.css, js: prev.js });
+        // JS だけ前stepから復元し、HTML/CSS はこのStepの完成形
+        setValues({ html: baseHtml, css: baseCss, js: prev.js });
         const updatedAt = saveStep(step, getValues());
         updateSaveInfo(updatedAt);
-        setStatus(`${prevStep} の入力を復元しました。`);
+        setStatus(`リセットしました（HTML/CSSはこのStep完成形、JSは${prevStep}の入力）。`);
         return;
       }
 
@@ -960,14 +1327,16 @@ function setupPersistence({ step, getValues, setValues, onAnyChange }) {
         setStatus(`${prevStep} の内容を読み込んでいます...`);
         const { html, css, js } = await loadStepSources(prevStep);
         const cleanedHtml = stripLiveServerInjection(String(html ?? ""));
-        setValues({ html: cleanedHtml, css: String(css ?? ""), js: String(js ?? "") });
+        // JS だけ前stepのサンプル、HTML/CSS はこのStepの完成形
+        setValues({ html: baseHtml, css: baseCss, js: String(js ?? "") });
         const updatedAt = saveStep(step, getValues());
         updateSaveInfo(updatedAt);
-        setStatus(`${prevStep} のサンプルを復元しました。`);
+        setStatus(`リセットしました（HTML/CSSはこのStep完成形、JSは${prevStep}のサンプル）。`);
       } catch (e) {
-        setValues({ html: "", css: "", js: "" });
-        updateSaveInfo(null);
-        setStatus("このStepの入力をリセットしました。\n" + String(e));
+        setValues({ html: baseHtml, css: baseCss, js: "" });
+        const updatedAt = saveStep(step, getValues());
+        updateSaveInfo(updatedAt);
+        setStatus("このStepの入力をリセットしました（HTML/CSSは完成形に戻しました）。\n" + String(e));
       }
     });
   }
@@ -976,17 +1345,35 @@ function setupPersistence({ step, getValues, setValues, onAnyChange }) {
   if (exportBtn) {
     exportBtn.addEventListener("click", () => {
       const all = collectAllSavedSteps();
-      const now = new Date();
-      const y = now.getFullYear();
-      const m = String(now.getMonth() + 1).padStart(2, "0");
-      const d = String(now.getDate()).padStart(2, "0");
-      const filename = `shooting-learning-playground-${y}${m}${d}.json`;
+      const baseName = exportNameInput ? exportNameInput.value : readExportName();
+      const filename = buildExportFilename({ baseName, kind: "export" });
       downloadJson(filename, {
         version: 1,
         exportedAt: Date.now(),
         items: all,
       });
       setStatus("エクスポートしました（JSONをダウンロードしました）。");
+    });
+  }
+
+  // 提出（このStepのみ）
+  if (submitBtn) {
+    submitBtn.addEventListener("click", () => {
+      const v = getValues();
+      const baseName = exportNameInput ? exportNameInput.value : readExportName();
+      const filename = buildExportFilename({ baseName, kind: "submit" });
+      downloadJson(filename, {
+        version: 1,
+        submittedAt: Date.now(),
+        step,
+        item: {
+          html: String(v.html ?? ""),
+          css: String(v.css ?? ""),
+          js: String(v.js ?? ""),
+          updatedAt: Date.now(),
+        },
+      });
+      setStatus("提出用JSONを作成しました（このStepのみ）。");
     });
   }
 
@@ -1036,7 +1423,11 @@ function setupPersistence({ step, getValues, setValues, onAnyChange }) {
 }
 
 async function loadStepSources(step) {
-  const manifest = await loadOptionalJson(`./${step}/manifest.json`);
+  // step1-8 には manifest.json が無いので、無駄な 404 を出さない
+  const m = String(step).match(/^step(\d+)$/);
+  const n = m ? Number(m[1]) : NaN;
+  const shouldTryManifest = Number.isFinite(n) && n >= 9;
+  const manifest = shouldTryManifest ? await loadOptionalJson(`./${step}/manifest.json`) : null;
 
   const htmlPromise = loadText(`./${step}/index.html`);
   const cssPromise = loadText(`./${step}/style.css`);
@@ -1105,7 +1496,8 @@ function setupRunner({ step, htmlText, cssText, jsText, fallbackHtml = "", fallb
     setStatus("実行しました。");
   };
 
-  document.getElementById("runBtn").addEventListener("click", run);
+  const runBtn = document.getElementById("runBtn");
+  if (runBtn) runBtn.addEventListener("click", run);
 
   // 初回も実行して表示しておく
   setTimeout(run, 0);
@@ -1122,7 +1514,7 @@ async function main() {
   sampleFrame.src = sampleUrl;
 
   const sampleOpen = document.getElementById("sampleOpen");
-  sampleOpen.href = sampleUrl;
+  if (sampleOpen) sampleOpen.href = sampleUrl;
 
   // サンプルのソース表示（表示のみ）
   let sampleJsManifestList = null;
@@ -1328,6 +1720,9 @@ async function main() {
   let fallbackHtml = "";
   let fallbackCss = "";
 
+  // 差分表示・初期値用の「このStepのサンプル」
+  const stepSample = { html: "", css: "", js: "", manifestJs: null };
+
   // 各stepのファイルを読み込んで、エディタに入れる
   try {
     const { html, css, js, manifestJs } = await loadStepSources(step);
@@ -1371,6 +1766,13 @@ async function main() {
     // iframe(srcdoc) の土台として使う分は、Live Server の注入が混ざる場合に備えて除去しておく
     fallbackHtml = stripLiveServerInjection(html);
     fallbackCss = String(css ?? "");
+
+    stepSample.html = fallbackHtml;
+    stepSample.css = String(css ?? "");
+    stepSample.js = String(js ?? "");
+    stepSample.manifestJs = Array.isArray(manifestJs)
+      ? manifestJs.map((s) => String(s || "").trim()).filter(Boolean)
+      : null;
 
     // 右側（自分の実行）は基本は空。保存データがあれば復元する。
     const wrappedEditors = {
@@ -1430,12 +1832,22 @@ async function main() {
         editors.refresh();
         setStatus(`読み込み完了。${prevStep} の入力を引き継ぎました。`);
       } else {
-        wrappedEditors.setValues({ html: "", css: "", js: "" });
-        updateSaveInfo(null);
+        // 初回はサンプルを初期値として入れておく（右側プレビューがすぐ動く）
+        wrappedEditors.setValues({ html: stepSample.html, css: stepSample.css, js: stepSample.js });
+        const updatedAt = saveStep(step, wrappedEditors.getValues());
+        updateSaveInfo(updatedAt);
         editors.refresh();
-        setStatus("読み込み完了。右側は空の状態です。まずは自分で書いて『実行』してください。");
+        setStatus("読み込み完了。サンプルを初期値として読み込みました。編集して『実行』してください。");
       }
     }
+
+    // 差分ビュー（サンプル vs 自分）
+    setupDiffViewer({
+      step,
+      editors: wrappedEditors,
+      getUserJsCombined: () => (jsManifestList && jsManifestList.length > 0 ? getCombinedJsFromFiles() : wrappedEditors.getValue("js")),
+      sample: stepSample,
+    });
   } catch (e) {
     setStatus(
       "読み込みに失敗しました。Live Server等で開いているか確認してください。\n" +
@@ -1455,9 +1867,12 @@ async function main() {
     jsText.value = v.js;
   };
 
-  document.getElementById("runBtn").addEventListener("click", () => {
-    syncToTextareas();
-  });
+  const runBtn = document.getElementById("runBtn");
+  if (runBtn) {
+    runBtn.addEventListener("click", () => {
+      syncToTextareas();
+    });
+  }
 
   // 初回実行も同期してから
   syncToTextareas();
